@@ -22,7 +22,7 @@ Requisitos: Node 20 o superior y Docker (para la base de datos).
 npm install
 cp .env.example .env        # y genera los secretos (ver abajo)
 docker compose up -d        # PostgreSQL en el puerto 5432
-npm run db:push             # crea las tablas
+npm run db:deploy           # crea las tablas aplicando las migraciones
 npm run db:seed             # datos de demostración (opcional)
 npm run dev
 ```
@@ -55,6 +55,8 @@ node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
 | `npm run test:e2e` | Recorridos completos en escritorio y móvil (Playwright) |
 | `npm run db:studio` | Explorador visual de la base de datos |
 | `npm run db:seed` | Vuelve a sembrar los datos de demostración |
+| `npm run db:migrate` | Crea una migración tras cambiar `schema.prisma` |
+| `npm run db:deploy` | Aplica las migraciones pendientes |
 
 La primera vez que corras los e2e: `npx playwright install chromium`.
 
@@ -112,15 +114,73 @@ Para probarlo a mano:
 curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/recurrentes
 ```
 
-## Despliegue en Vercel + Neon
+## Despliegue en Vercel + Supabase
 
-1. Crea una base en [Neon](https://neon.tech) y copia su cadena de conexión.
-2. Importa el repositorio en Vercel.
-3. Variables de entorno del proyecto: `DATABASE_URL` (la de Neon, con `?sslmode=require`),
-   `AUTH_SECRET`, `AUTH_URL` (la URL pública) y `CRON_SECRET`.
-4. Despliega. El `build` corre `prisma generate`; las tablas se crean con
-   `npx prisma db push` apuntando a `DATABASE_URL` de Neon.
-5. El cron de `vercel.json` queda programado a las 06:00 UTC.
+### 1. Base de datos en Supabase
+
+Crea un proyecto en [supabase.com](https://supabase.com) (región más cercana: para
+Colombia, `East US` o `South America (São Paulo)`). Guarda la contraseña de la base:
+solo se muestra una vez.
+
+En **Project Settings → Database → Connection string** copia las dos cadenas:
+
+| Variable | Cuál copiar | Para qué |
+|---|---|---|
+| `DATABASE_URL` | **Transaction pooler**, puerto `6543` | La app. Añade `?pgbouncer=true&connection_limit=1` al final |
+| `DIRECT_URL` | **Session pooler**, puerto `5432` | Solo las migraciones |
+
+En serverless cada invocación abriría una conexión nueva, y por eso la app va por el
+pooler. Las migraciones no pueden ir por ahí: PgBouncer en modo transacción no soporta
+las sentencias que Prisma necesita.
+
+### 2. Proyecto en Vercel
+
+Sube el repositorio a GitHub e impórtalo en Vercel. No hace falta tocar la
+configuración de build: `vercel.json` y los scripts ya están puestos.
+
+Variables de entorno del proyecto (**Settings → Environment Variables**, en los tres
+entornos):
+
+| Variable | Valor |
+|---|---|
+| `DATABASE_URL` | La del pooler de transacción (puerto 6543) |
+| `DIRECT_URL` | La del pooler de sesión (puerto 5432) |
+| `AUTH_SECRET` | `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` |
+| `AUTH_URL` | La URL pública, por ejemplo `https://tu-proyecto.vercel.app` |
+| `CRON_SECRET` | `node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"` |
+
+`AUTH_URL` solo se conoce después del primer despliegue: ponla y vuelve a desplegar.
+
+### 3. Las tablas
+
+El `build` corre `prisma migrate deploy`, así que las tablas se crean solas en el primer
+despliegue. Si algo falla, el despliegue falla de forma visible en vez de reventar en la
+primera petición.
+
+Para aplicarlas a mano desde tu máquina:
+
+```bash
+DIRECT_URL="<la de Supabase, puerto 5432>" npx prisma migrate deploy
+```
+
+### 4. El cron
+
+`vercel.json` programa `/api/cron/recurrentes` a las 06:00 UTC (01:00 en Colombia).
+Vercel envía `CRON_SECRET` como Bearer token; sin él la ruta responde 401. En el plan
+gratuito los crons corren una vez al día, que es justo lo que necesita esta app.
+
+Para probarlo contra producción:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://tu-proyecto.vercel.app/api/cron/recurrentes
+```
+
+### 5. Tu cuenta
+
+La app no trae usuarios: entra a `https://tu-proyecto.vercel.app/registro`, crea tu
+cuenta, crea tu hogar y desde **Hogar → Invitar** generas el enlace para quien viva
+contigo. La semilla de demostración es solo para desarrollo local; no la corras contra
+producción.
 
 ## Lo que quedó fuera de esta versión
 

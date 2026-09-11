@@ -7,7 +7,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // Conexión agrupada (PgBouncer). Es la que usa la app en Vercel: en serverless
+  // cada invocación abriría una conexión nueva y Postgres se quedaría sin cupo.
   url      = env("DATABASE_URL")
+  // Conexión directa, solo para migraciones: PgBouncer en modo transacción no
+  // soporta las sentencias DDL que Prisma necesita.
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {

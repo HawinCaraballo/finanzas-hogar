@@ -6,6 +6,9 @@ import type { NextAuthConfig } from "next-auth";
  * en el archivo de Node.
  */
 export const authConfig = {
+  // Detrás del proxy de Vercel la petición llega con el host reenviado; sin
+  // esto Auth.js la rechaza con UntrustedHost.
+  trustHost: true,
   pages: {
     signIn: "/login",
     error: "/login",
