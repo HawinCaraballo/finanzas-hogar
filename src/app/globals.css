@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Paleta: base neutra fría, verde azulado como color de marca, y dos colores
+  semánticos que se repiten en toda la app — verde = entra dinero,
+  rosa = sale dinero. Nunca se usan para otra cosa.
+*/
+:root {
+  --fondo: oklch(0.985 0.003 240);
+  --superficie: oklch(1 0 0);
+  --superficie-2: oklch(0.972 0.004 240);
+  --texto: oklch(0.21 0.02 250);
+  --texto-suave: oklch(0.52 0.02 250);
+  --borde: oklch(0.91 0.006 250);
+  --marca: oklch(0.55 0.11 185);
+  --marca-suave: oklch(0.95 0.03 185);
+  --marca-texto: oklch(1 0 0);
+  --ingreso: oklch(0.62 0.15 155);
+  --ingreso-suave: oklch(0.95 0.05 155);
+  --egreso: oklch(0.62 0.19 18);
+  --egreso-suave: oklch(0.96 0.03 18);
+  --alerta: oklch(0.75 0.15 75);
+  --anillo: oklch(0.55 0.11 185 / 0.45);
+  --radio: 0.75rem;
+}
+
+.dark {
+  --fondo: oklch(0.17 0.012 255);
+  --superficie: oklch(0.215 0.014 255);
+  --superficie-2: oklch(0.255 0.015 255);
+  --texto: oklch(0.96 0.004 250);
+  --texto-suave: oklch(0.7 0.018 250);
+  --borde: oklch(0.32 0.015 255);
+  --marca: oklch(0.72 0.11 185);
+  --marca-suave: oklch(0.3 0.05 185);
+  --marca-texto: oklch(0.17 0.012 255);
+  --ingreso: oklch(0.75 0.15 155);
+  --ingreso-suave: oklch(0.3 0.06 155);
+  --egreso: oklch(0.71 0.17 18);
+  --egreso-suave: oklch(0.31 0.07 18);
+  --alerta: oklch(0.8 0.14 75);
+  --anillo: oklch(0.72 0.11 185 / 0.5);
+}
+
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-borde: var(--borde);
+  --color-marca: var(--marca);
+  --color-marca-suave: var(--marca-suave);
+  --color-marca-texto: var(--marca-texto);
+  --color-ingreso: var(--ingreso);
+  --color-ingreso-suave: var(--ingreso-suave);
+  --color-egreso: var(--egreso);
+  --color-egreso-suave: var(--egreso-suave);
+  --color-alerta: var(--alerta);
+  --radius-app: var(--radio);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--borde);
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background-color: var(--fondo);
+    color: var(--texto);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Los montos grandes se leen mejor con cifras de ancho fijo. */
+  .cifra {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--marca);
+    outline-offset: 2px;
+  }
+  /* Oculta las flechas de los inputs numéricos: los montos se escriben a mano. */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  /* Deja espacio para la barra inferior del móvil y el notch. */
+  .pb-navegacion {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 768px) {
+    .pb-navegacion {
+      padding-bottom: 2rem;
+    }
+  }
+  .scrollbar-fina {
+    scrollbar-width: thin;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
