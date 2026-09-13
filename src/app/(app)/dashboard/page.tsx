@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarClock, PieChart, Target } from "lucide-react";
 import { SelectorMes } from "@/components/selector-mes";
+import { SelectorAlcance } from "@/components/selector-alcance";
 import { GastosCategoria } from "@/components/dashboard/gastos-categoria";
 import { GraficaMensual } from "@/components/dashboard/grafica-mensual";
 import { TarjetasKpi } from "@/components/dashboard/tarjetas-kpi";
@@ -17,7 +18,9 @@ import {
   TarjetaTitulo,
 } from "@/components/ui/card";
 import { EstadoVacio } from "@/components/ui/varios";
+import { esPersona, etiquetaAlcance, parseAlcance } from "@/lib/alcance";
 import { requireHogar } from "@/lib/auth/guard";
+import { miembrosDelHogar } from "@/server/hogares";
 import { claveDePeriodo, nombrePeriodo, parseClavePeriodo, periodoActual } from "@/lib/periodo";
 import {
   gastosPorCategoria,
@@ -33,19 +36,25 @@ export const metadata: Metadata = { title: "Inicio" };
 export default async function PaginaDashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string }>;
+  searchParams: Promise<{ mes?: string; quien?: string }>;
 }) {
-  const { mes } = await searchParams;
+  const { mes, quien } = await searchParams;
   const ctx = await requireHogar();
+  const miembros = await miembrosDelHogar();
+  const alcance = parseAlcance(quien, miembros);
   const periodo = (mes && parseClavePeriodo(mes)) || periodoActual();
+  const soloUnaPersona = esPersona(alcance);
+  const dequien = etiquetaAlcance(alcance, miembros);
 
   const [resumen, serie, gastos, presupuestos, pagos, recientes] = await Promise.all([
-    resumenDelMes(periodo),
-    serieMensual(periodo, 12),
-    gastosPorCategoria(periodo),
+    resumenDelMes(periodo, alcance),
+    serieMensual(periodo, alcance, 12),
+    gastosPorCategoria(periodo, alcance),
+    // Presupuestos y próximos pagos son del hogar por definición: un tope o una
+    // cuota no se parten por persona, así que no siguen el alcance.
     presupuestosDelMes(periodo),
     proximosPagos(15),
-    ultimosMovimientos(6),
+    ultimosMovimientos(alcance, 6),
   ]);
 
   const sinDatos = resumen.cantidadMovimientos === 0 && serie.every((p) => p.ingresos + p.egresos === 0);
@@ -54,20 +63,39 @@ export default async function PaginaDashboard({
     <div className="space-y-5">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">{ctx.hogar.nombre}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-texto">
+            {soloUnaPersona ? `Cuenta de ${dequien}` : ctx.hogar.nombre}
+          </h1>
           <p className="text-sm text-texto-suave">
-            Resumen de <span className="capitalize">{nombrePeriodo(periodo)}</span>
+            {soloUnaPersona ? `${ctx.hogar.nombre} · ` : "Resumen de "}
+            <span className="capitalize">{nombrePeriodo(periodo)}</span>
           </p>
         </div>
-        <SelectorMes clave={claveDePeriodo(periodo)} className="justify-between sm:justify-end" />
+        <div className="flex flex-col gap-2 sm:items-end">
+          <SelectorMes clave={claveDePeriodo(periodo)} className="justify-between sm:justify-end" />
+          <SelectorAlcance
+            alcance={alcance}
+            miembros={miembros}
+            usuarioActualId={ctx.user.id}
+            className="justify-between sm:justify-end"
+          />
+        </div>
       </header>
 
       {sinDatos ? (
         <Tarjeta>
           <EstadoVacio
             icono={PieChart}
-            titulo="Tu dashboard está esperando el primer movimiento"
-            descripcion="Registra un ingreso o un gasto y aquí verás, mes a mes, cuánto entra y cuánto sale de tu hogar."
+            titulo={
+              soloUnaPersona
+                ? `${dequien} no tiene movimientos todavía`
+                : "Tu dashboard está esperando el primer movimiento"
+            }
+            descripcion={
+              soloUnaPersona
+                ? "Cuando se registre un movimiento a su nombre, aparecerá aquí su cuenta individual."
+                : "Registra un ingreso o un gasto y aquí verás, mes a mes, cuánto entra y cuánto sale de tu hogar."
+            }
           >
             <BotonRegistrar tamano="lg" />
           </EstadoVacio>
@@ -119,7 +147,9 @@ export default async function PaginaDashboard({
                 <TarjetaEncabezado>
                   <div>
                     <TarjetaTitulo>Presupuestos</TarjetaTitulo>
-                    <TarjetaDescripcion>Cuánto llevas de cada tope</TarjetaDescripcion>
+                    <TarjetaDescripcion>
+                      {soloUnaPersona ? "Topes de todo el hogar" : "Cuánto llevas de cada tope"}
+                    </TarjetaDescripcion>
                   </div>
                   <EnlaceSeccion href={`/presupuestos?mes=${claveDePeriodo(periodo)}`} />
                 </TarjetaEncabezado>
@@ -140,7 +170,11 @@ export default async function PaginaDashboard({
                 <TarjetaEncabezado>
                   <div>
                     <TarjetaTitulo>Próximos pagos</TarjetaTitulo>
-                    <TarjetaDescripcion>Los siguientes 15 días</TarjetaDescripcion>
+                    <TarjetaDescripcion>
+                      {soloUnaPersona
+                        ? "Del hogar, los siguientes 15 días"
+                        : "Los siguientes 15 días"}
+                    </TarjetaDescripcion>
                   </div>
                 </TarjetaEncabezado>
                 <TarjetaContenido>

@@ -41,7 +41,12 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
               nameKey="nombre"
               innerRadius="62%"
               outerRadius="100%"
-              paddingAngle={2}
+              // Explícitos: arranca arriba y cierra el círculo. Con los valores
+              // por defecto, el paddingAngle dejaba un hueco al final.
+              startAngle={90}
+              endAngle={-270}
+              paddingAngle={1}
+              minAngle={3}
               strokeWidth={0}
             >
               {porciones.map((p) => (

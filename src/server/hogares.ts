@@ -195,6 +195,21 @@ async function esUnicoAdmin(householdId: string): Promise<boolean> {
   return admins <= 1;
 }
 
+/**
+ * Solo id y nombre de cada miembro. Lo usan los selectores de pagador y de
+ * alcance, que se renderizan en casi todas las páginas y no necesitan traerse
+ * las invitaciones ni los correos.
+ */
+export async function miembrosDelHogar(): Promise<Array<{ id: string; nombre: string }>> {
+  const ctx = await requireHogar();
+  const filas = await prisma.householdMember.findMany({
+    where: { householdId: ctx.hogar.id },
+    select: { user: { select: { id: true, nombre: true } } },
+    orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
+  });
+  return filas.map((f) => f.user);
+}
+
 /** Datos de la pantalla de administración del hogar. */
 export async function datosDelHogar() {
   const ctx = await requireHogar();

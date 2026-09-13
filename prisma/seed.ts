@@ -75,22 +75,24 @@ async function main() {
   }
 
   const hoy = new Date();
-  const plantilla: Array<[string, number, number, string]> = [
-    ["Salario", 4_800_000, 1, "Salario mensual"],
-    ["Honorarios", 900_000, 12, "Proyecto freelance"],
-    ["Arriendo o hipoteca", 1_800_000, 2, "Arriendo"],
-    ["Energía", 145_000, 8, "Factura de energía"],
-    ["Agua", 68_000, 9, "Factura de acueducto"],
-    ["Gas", 42_000, 9, "Factura de gas"],
-    ["Internet", 119_900, 10, "Plan de internet"],
-    ["Telefonía", 75_000, 10, "Plan celular"],
-    ["Mercado", 780_000, 6, "Mercado del mes"],
-    ["Restaurantes", 210_000, 18, "Salidas a comer"],
-    ["Transporte", 160_000, 15, "Transporte"],
-    ["Combustible", 240_000, 14, "Gasolina"],
-    ["Cuota de crédito", 620_000, 20, "Cuota crédito de libre inversión"],
-    ["Tarjeta de crédito", 450_000, 22, "Pago tarjeta"],
-    ["Entretenimiento", 130_000, 25, "Streaming y cine"],
+  // El último número dice quién pone la plata: 0 = Ana, 1 = Luis. Se reparte a
+  // propósito para que el dashboard y los reportes tengan algo que comparar.
+  const plantilla: Array<[string, number, number, string, number]> = [
+    ["Salario", 4_800_000, 1, "Salario mensual", 0],
+    ["Honorarios", 900_000, 12, "Proyecto freelance", 1],
+    ["Arriendo o hipoteca", 1_800_000, 2, "Arriendo", 0],
+    ["Energía", 145_000, 8, "Factura de energía", 1],
+    ["Agua", 68_000, 9, "Factura de acueducto", 1],
+    ["Gas", 42_000, 9, "Factura de gas", 1],
+    ["Internet", 119_900, 10, "Plan de internet", 0],
+    ["Telefonía", 75_000, 10, "Plan celular", 1],
+    ["Mercado", 780_000, 6, "Mercado del mes", 0],
+    ["Restaurantes", 210_000, 18, "Salidas a comer", 1],
+    ["Transporte", 160_000, 15, "Transporte", 1],
+    ["Combustible", 240_000, 14, "Gasolina", 0],
+    ["Cuota de crédito", 620_000, 20, "Cuota crédito de libre inversión", 0],
+    ["Tarjeta de crédito", 450_000, 22, "Pago tarjeta", 0],
+    ["Entretenimiento", 130_000, 25, "Streaming y cine", 1],
   ];
 
   const movimientos = [];
@@ -99,14 +101,17 @@ async function main() {
     const year = ref.getUTCFullYear();
     const month = ref.getUTCMonth() + 1;
 
-    for (const [nombreCat, base, dia, descripcion] of plantilla) {
+    for (const [nombreCat, base, dia, descripcion, pagador] of plantilla) {
       const cat = buscar(nombreCat);
       // Variación de +-12 % para que las gráficas no salgan planas.
       const factor = 0.88 + ((atras * 7 + dia) % 25) / 100;
       movimientos.push({
         householdId: hogar.id,
         categoryId: cat.id,
+        // Quien registra y quien paga se cruzan a propósito en algunos casos,
+        // para que se vea que la app los distingue.
         createdByUserId: usuarios[dia % 2].id,
+        paidByUserId: usuarios[pagador].id,
         type: cat.type as MovementType,
         amount: Math.round((base * factor) / 100) * 100,
         date: fechaUTC(year, month, Math.min(dia, 28)),
@@ -161,6 +166,7 @@ async function main() {
     data: {
       householdId: hogar.id,
       categoryId: buscar("Arriendo o hipoteca").id,
+      paidByUserId: usuarios[0].id,
       type: "EGRESO",
       amount: 1_800_000,
       descripcion: "Arriendo",

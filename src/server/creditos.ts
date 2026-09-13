@@ -94,6 +94,7 @@ export async function creditoConPagos(id: string): Promise<{
         include: {
           categoria: { select: { id: true, nombre: true, icon: true, color: true } },
           autor: { select: { id: true, nombre: true } },
+          responsable: { select: { id: true, nombre: true } },
         },
         orderBy: { date: "desc" },
       },
@@ -133,6 +134,7 @@ export async function creditoConPagos(id: string): Promise<{
       notas: p.notas,
       categoria: p.categoria,
       autor: p.autor,
+      responsable: p.responsable,
       loanId: p.loanId,
       esRecurrente: p.recurringRuleId !== null,
     })),
@@ -204,12 +206,26 @@ export async function pagarCuota(entrada: unknown): Promise<Resultado> {
     );
     const numeroCuota = Math.min(resumen.cuotasPagadas + 1, credito.totalInstallments);
 
+    // La cuota la puede estar registrando alguien distinto de quien la pagó.
+    const paidByUserId = datos.paidByUserId
+      ? (
+          await prisma.householdMember.findUnique({
+            where: {
+              userId_householdId: { userId: datos.paidByUserId, householdId: ctx.hogar.id },
+            },
+            select: { userId: true },
+          })
+        )?.userId
+      : ctx.user.id;
+    if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
+
     await prisma.$transaction(async (tx) => {
       await tx.transaction.create({
         data: {
           householdId: ctx.hogar.id,
           categoryId: credito.categoryId,
           createdByUserId: ctx.user.id,
+          paidByUserId,
           type: "EGRESO",
           amount: datos.amount,
           date: parseFechaISO(datos.date),

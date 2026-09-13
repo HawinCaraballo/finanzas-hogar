@@ -2,7 +2,12 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Dialogo, DialogoContenido } from "@/components/ui/dialog";
-import type { CategoriaVista, CreditoVista, MovimientoVista } from "@/lib/tipos";
+import type {
+  CategoriaVista,
+  CreditoVista,
+  MiembroVista,
+  MovimientoVista,
+} from "@/lib/tipos";
 import { FormularioMovimiento } from "./formulario-movimiento";
 
 type Estado =
@@ -24,10 +29,14 @@ const ContextoMovimiento = createContext<Api | null>(null);
 export function ProveedorMovimiento({
   categorias,
   creditos,
+  miembros,
+  usuarioActualId,
   children,
 }: {
   categorias: CategoriaVista[];
   creditos: CreditoVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   children: React.ReactNode;
 }) {
   const [estado, setEstado] = useState<Estado>({ modo: "cerrado" });
@@ -59,6 +68,8 @@ export function ProveedorMovimiento({
             <FormularioMovimiento
               categorias={categorias}
               creditos={creditos}
+              miembros={miembros}
+              usuarioActualId={usuarioActualId}
               movimiento={estado.modo === "editar" ? estado.movimiento : undefined}
               tipoInicial={estado.modo === "nuevo" ? estado.tipo : undefined}
               onListo={cerrar}

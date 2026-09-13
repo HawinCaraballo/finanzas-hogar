@@ -1,6 +1,6 @@
 import {
-  ArrowLeftRight, Landmark, LayoutDashboard, Repeat, Tags, Target, Users,
-  type LucideIcon,
+  ArrowLeftRight, ChartColumnBig, Landmark, LayoutDashboard, Repeat, Tags, Target,
+  Users, type LucideIcon,
 } from "lucide-react";
 
 export type ItemNavegacion = {
@@ -14,6 +14,7 @@ export type ItemNavegacion = {
 export const NAVEGACION: ItemNavegacion[] = [
   { href: "/dashboard", etiqueta: "Inicio", icono: LayoutDashboard },
   { href: "/movimientos", etiqueta: "Movimientos", icono: ArrowLeftRight },
+  { href: "/reportes", etiqueta: "Reportes", icono: ChartColumnBig },
   { href: "/presupuestos", etiqueta: "Presupuestos", icono: Target },
   { href: "/creditos", etiqueta: "Créditos", icono: Landmark },
   { href: "/recurrentes", etiqueta: "Recurrentes", icono: Repeat },

@@ -6,10 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   // Conexión agrupada (PgBouncer). Es la que usa la app en Vercel: en serverless
   // cada invocación abriría una conexión nueva y Postgres se quedaría sin cupo.
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
   // Conexión directa, solo para migraciones: PgBouncer en modo transacción no
   // soporta las sentencias DDL que Prisma necesita.
   directUrl = env("DIRECT_URL")
@@ -53,8 +53,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  memberships  HouseholdMember[]
-  movimientos  Transaction[]     @relation("MovimientosCreados")
+  memberships        HouseholdMember[]
+  // Movimientos que esta persona registró en la app...
+  movimientos        Transaction[]     @relation("MovimientosCreados")
+  // ...y aquellos cuyo dinero puso o recibió, que no siempre son los mismos.
+  movimientosPagados Transaction[]     @relation("MovimientosPagados")
+  reglasPagadas      RecurringRule[]   @relation("ReglasPagadas")
 }
 
 model Household {
@@ -128,7 +132,11 @@ model Transaction {
   id              String       @id @default(cuid())
   householdId     String
   categoryId      String
+  // Quién lo registró en la app.
   createdByUserId String
+  // Quién puso la plata (en un egreso) o la recibió (en un ingreso). Es lo que
+  // define la cuenta individual, y no tiene por qué ser quien lo registró.
+  paidByUserId    String
   type            MovementType
   amount          Decimal      @db.Decimal(14, 2)
   date            DateTime     @db.Date
@@ -142,15 +150,17 @@ model Transaction {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
-  household Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  categoria Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  autor     User           @relation("MovimientosCreados", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  credito   Loan?          @relation(fields: [loanId], references: [id], onDelete: SetNull)
-  regla     RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
+  household   Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  categoria   Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  autor       User           @relation("MovimientosCreados", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  responsable User           @relation("MovimientosPagados", fields: [paidByUserId], references: [id], onDelete: Restrict)
+  credito     Loan?          @relation(fields: [loanId], references: [id], onDelete: SetNull)
+  regla       RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
 
   @@unique([recurringRuleId, periodKey])
   @@index([householdId, date])
   @@index([householdId, categoryId])
+  @@index([householdId, paidByUserId, date])
   @@index([loanId])
 }
 
@@ -172,24 +182,28 @@ model Budget {
 }
 
 model RecurringRule {
-  id          String       @id @default(cuid())
-  householdId String
-  categoryId  String
-  type        MovementType
-  amount      Decimal      @db.Decimal(14, 2)
-  descripcion String
-  frequency   Frequency    @default(MENSUAL)
-  dayOfMonth  Int          @default(1)
-  startDate   DateTime     @db.Date
-  endDate     DateTime?    @db.Date
-  nextRunDate DateTime     @db.Date
-  autoPost    Boolean      @default(true)
-  activa      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id           String       @id @default(cuid())
+  householdId  String
+  categoryId   String
+  // A quién se le atribuye el movimiento que genera el cron, donde no hay
+  // ninguna persona al teclado para elegirlo.
+  paidByUserId String
+  type         MovementType
+  amount       Decimal      @db.Decimal(14, 2)
+  descripcion  String
+  frequency    Frequency    @default(MENSUAL)
+  dayOfMonth   Int          @default(1)
+  startDate    DateTime     @db.Date
+  endDate      DateTime?    @db.Date
+  nextRunDate  DateTime     @db.Date
+  autoPost     Boolean      @default(true)
+  activa       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
   categoria   Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  responsable User          @relation("ReglasPagadas", fields: [paidByUserId], references: [id], onDelete: Restrict)
   movimientos Transaction[]
 
   @@index([householdId, activa])
@@ -197,19 +211,19 @@ model RecurringRule {
 }
 
 model Loan {
-  id                 String     @id @default(cuid())
-  householdId        String
-  categoryId         String
-  nombre             String
-  kind               LoanKind   @default(CREDITO)
-  principal          Decimal    @db.Decimal(14, 2)
-  interestRate       Decimal    @default(0) @db.Decimal(6, 3)
-  totalInstallments  Int
-  installmentAmount  Decimal    @db.Decimal(14, 2)
-  startDate          DateTime   @db.Date
-  status             LoanStatus @default(ACTIVO)
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id                String     @id @default(cuid())
+  householdId       String
+  categoryId        String
+  nombre            String
+  kind              LoanKind   @default(CREDITO)
+  principal         Decimal    @db.Decimal(14, 2)
+  interestRate      Decimal    @default(0) @db.Decimal(6, 3)
+  totalInstallments Int
+  installmentAmount Decimal    @db.Decimal(14, 2)
+  startDate         DateTime   @db.Date
+  status            LoanStatus @default(ACTIVO)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   household Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
   categoria Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)

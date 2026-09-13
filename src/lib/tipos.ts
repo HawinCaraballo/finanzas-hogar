@@ -20,7 +20,10 @@ export type MovimientoVista = {
   descripcion: string;
   notas: string | null;
   categoria: { id: string; nombre: string; icon: string; color: string };
+  /** Quién lo registró en la app. */
   autor: { id: string; nombre: string };
+  /** Quién puso o recibió la plata. Define la cuenta individual. */
+  responsable: { id: string; nombre: string };
   loanId: string | null;
   esRecurrente: boolean;
 };
@@ -42,6 +45,8 @@ export type FiltrosMovimientos = {
   periodo?: string; // "2026-09"; ausente = todos los meses
   type?: MovementType | "TODOS";
   categoryId?: string;
+  /** Filtra por quién pagó o recibió, no por quién registró. */
+  paidByUserId?: string;
   texto?: string;
   pagina?: number;
 };
@@ -124,4 +129,33 @@ export type RecurrenteVista = {
   autoPost: boolean;
   activa: boolean;
   categoria: { id: string; nombre: string; icon: string; color: string };
+  responsable: { id: string; nombre: string };
+};
+
+// --- Reportes por miembro ---
+
+export type MiembroVista = { id: string; nombre: string };
+
+export type TotalesHogarVista = { ingresos: number; egresos: number; balance: number };
+
+/** Una fila de la tabla comparativa, con su peso dentro del hogar. */
+export type FilaComparativa = {
+  userId: string;
+  nombre: string;
+  ingresos: number;
+  egresos: number;
+  balance: number;
+  /** Qué parte de los ingresos del hogar aportó, en 0..100. */
+  participacionIngresos: number;
+  /** Qué parte de los gastos del hogar pagó, en 0..100. */
+  participacionEgresos: number;
+};
+
+/** Un mes de la serie apilada, con el total de cada miembro en ese mes. */
+export type PuntoSerieMiembros = {
+  clave: string;
+  etiqueta: string;
+  /** userId -> monto del mes. */
+  ingresos: Record<string, number>;
+  egresos: Record<string, number>;
 };
