@@ -27,7 +27,10 @@ export async function listarRecurrentes(): Promise<RecurrenteVista[]> {
 
   const filas = await prisma.recurringRule.findMany({
     where: { householdId: ctx.hogar.id },
-    include: { categoria: { select: { id: true, nombre: true, icon: true, color: true } } },
+    include: {
+      categoria: { select: { id: true, nombre: true, icon: true, color: true } },
+      responsable: { select: { id: true, nombre: true } },
+    },
     orderBy: [{ activa: "desc" }, { nextRunDate: "asc" }],
   });
 
@@ -44,6 +47,7 @@ export async function listarRecurrentes(): Promise<RecurrenteVista[]> {
     autoPost: r.autoPost,
     activa: r.activa,
     categoria: r.categoria,
+    responsable: r.responsable,
   }));
 }
 
@@ -63,8 +67,12 @@ export async function guardarRecurrente(entrada: unknown): Promise<Resultado> {
       return fallo("La fecha de fin no puede ser anterior a la de inicio.");
     }
 
+    const paidByUserId = await pagadorValido(ctx.hogar.id, datos.paidByUserId, ctx.user.id);
+    if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
+
     const comunes = {
       categoryId: datos.categoryId,
+      paidByUserId,
       type: datos.type,
       amount: datos.amount,
       descripcion: datos.descripcion,
@@ -100,6 +108,20 @@ export async function guardarRecurrente(entrada: unknown): Promise<Resultado> {
   } catch (e) {
     return comoFallo(e);
   }
+}
+
+/** El pagador de una regla tiene que vivir en el hogar. Devuelve null si no. */
+async function pagadorValido(
+  householdId: string,
+  candidato: string | undefined,
+  porDefecto: string,
+): Promise<string | null> {
+  if (!candidato || candidato === porDefecto) return porDefecto;
+  const membresia = await prisma.householdMember.findUnique({
+    where: { userId_householdId: { userId: candidato, householdId } },
+    select: { userId: true },
+  });
+  return membresia?.userId ?? null;
 }
 
 export async function alternarRecurrente(id: string, activa: boolean): Promise<Resultado> {
@@ -152,6 +174,9 @@ export async function registrarAhora(id: string): Promise<Resultado> {
           householdId: ctx.hogar.id,
           categoryId: regla.categoryId,
           createdByUserId: ctx.user.id,
+          // Lo registra quien pulsa el botón, pero la plata la pone quien diga
+          // la regla.
+          paidByUserId: regla.paidByUserId,
           type: regla.type,
           amount: regla.amount,
           date: fecha,

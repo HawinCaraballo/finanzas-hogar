@@ -13,6 +13,10 @@ Responsive: se usa igual desde el celular que desde el computador.
 - **Créditos** con seguimiento de cuotas pagadas, saldo pendiente y fecha de finalización.
 - **Multi-hogar y multi-usuario**: una persona puede administrar varias casas, e invitar
   a quien viva con ella como administrador o miembro.
+- **Cuenta individual y cuenta del hogar**: cada movimiento se atribuye a quien puso o
+  recibió la plata, así que el dashboard se puede ver por persona o por casa completa.
+- **Reportes** que comparan a los miembros entre sí: quién aportó cuánto, quién pagó qué
+  y cómo se repartió el esfuerzo mes a mes.
 
 ## Puesta en marcha (local)
 
@@ -78,6 +82,8 @@ src/lib/          Lógica pura y probable sin base de datos:
                   periodo.ts (meses, rangos, fechas en UTC)
                   recurrencia.ts (cuándo toca la próxima ocurrencia)
                   creditos.ts / presupuesto.ts (cálculos)
+                  alcance.ts (de quién son las cifras)
+                  reparto.ts (participación de cada miembro)
 src/server/       Server Actions: validar -> autorizar -> consultar -> revalidar
 src/components/   Interfaz, agrupada por sección
 src/app/          Rutas (App Router)
@@ -93,6 +99,29 @@ Ninguna consulta recibe un `householdId` enviado por el cliente. Todo pasa por
 resuelve el hogar activo desde una cookie y **verifica la membresía** antes de devolver
 el contexto. Las acciones de administración usan `requireAdmin()`. Hay una prueba e2e
 dedicada a comprobar que un hogar no ve los movimientos de otro.
+
+### Las dos cuentas
+
+Un movimiento guarda dos personas distintas: `createdByUserId`, quien lo **registró** en
+la app, y `paidByUserId`, quien **puso o recibió la plata**. No siempre son la misma:
+Ana puede registrar la factura del gas que pagó Luis, y la cuenta individual se guía
+siempre por la segunda.
+
+De quién son las cifras que se están mirando es el **alcance**
+([src/lib/alcance.ts](src/lib/alcance.ts)): el hogar entero o una persona. Vive en la URL
+(`?quien=`) para que el botón «atrás» funcione y una vista se pueda compartir, y
+`parseAlcance` lo valida **contra los miembros del hogar activo**, así un id ajeno cae en
+«hogar» en vez de filtrar por alguien de otra casa.
+
+No existen los gastos personales: todo movimiento cuenta a la vez en su cuenta individual
+y en la del hogar. De ahí la invariante que prueba
+[tests/e2e/cuentas-individuales.spec.ts](tests/e2e/cuentas-individuales.spec.ts): **el
+total del hogar es la suma exacta de las cuentas individuales.**
+
+Dos bloques del dashboard no siguen el alcance a propósito: los **presupuestos**, porque
+un tope es del hogar y «mi parte del tope» no significa nada, y los **próximos pagos**,
+porque lo que viene le importa a la casa entera. Ambos lo dicen en su encabezado cuando
+hay una persona seleccionada.
 
 ### Moneda
 

@@ -74,6 +74,8 @@ export const movimientoSchema = z.object({
   descripcion: z.string().trim().min(1, "Escribe una descripción").max(120),
   notas: z.string().trim().max(500).optional().or(z.literal("")),
   loanId: z.string().optional().or(z.literal("")),
+  // Quién puso la plata. Si no viene, la acción usa al usuario de la sesión.
+  paidByUserId: z.string().optional().or(z.literal("")),
 });
 
 // --- Presupuestos ---
@@ -99,6 +101,7 @@ export const recurrenteSchema = z.object({
   startDate: fechaISOSchema,
   endDate: fechaISOSchema.optional().or(z.literal("")),
   autoPost: z.boolean(),
+  paidByUserId: z.string().optional().or(z.literal("")),
 });
 
 // --- Créditos ---
@@ -120,6 +123,7 @@ export const pagoCuotaSchema = z.object({
   amount: montoSchema,
   date: fechaISOSchema,
   notas: z.string().trim().max(500).optional().or(z.literal("")),
+  paidByUserId: z.string().optional().or(z.literal("")),
 });
 
 export type MovimientoInput = z.infer<typeof movimientoSchema>;

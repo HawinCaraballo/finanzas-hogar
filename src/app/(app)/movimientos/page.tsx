@@ -7,7 +7,10 @@ import { ListaMovimientos } from "@/components/movimientos/lista-movimientos";
 import { ResumenFiltrado } from "@/components/movimientos/resumen-filtrado";
 import { Tarjeta } from "@/components/ui/card";
 import { Boton } from "@/components/ui/button";
+import { parseAlcance, esPersona } from "@/lib/alcance";
+import { requireHogar } from "@/lib/auth/guard";
 import { claveDePeriodo, parseClavePeriodo, periodoActual } from "@/lib/periodo";
+import { miembrosDelHogar } from "@/server/hogares";
 import { categoriasDelHogar, listarMovimientos } from "@/server/movimientos";
 
 export const metadata: Metadata = { title: "Movimientos" };
@@ -16,6 +19,7 @@ type Busqueda = {
   mes?: string;
   tipo?: string;
   categoria?: string;
+  quien?: string;
   q?: string;
   pagina?: string;
 };
@@ -31,12 +35,19 @@ export default async function PaginaMovimientos({
   const tipo = sp.tipo === "INGRESO" || sp.tipo === "EGRESO" ? sp.tipo : "TODOS";
   const pagina = Number(sp.pagina) > 0 ? Number(sp.pagina) : 1;
 
+  const ctx = await requireHogar();
+  const miembros = await miembrosDelHogar();
+  // Se valida contra los miembros del hogar: un id ajeno no debe filtrar nada.
+  const alcance = parseAlcance(sp.quien, miembros);
+  const quien = esPersona(alcance) ? alcance.userId : "";
+
   const [categorias, resultado] = await Promise.all([
     categoriasDelHogar(false),
     listarMovimientos({
       periodo: clave,
       type: tipo,
       categoryId: sp.categoria || undefined,
+      paidByUserId: quien || undefined,
       texto: sp.q || undefined,
       pagina,
     }),
@@ -46,6 +57,7 @@ export default async function PaginaMovimientos({
     const p = new URLSearchParams({ mes: clave });
     if (tipo !== "TODOS") p.set("tipo", tipo);
     if (sp.categoria) p.set("categoria", sp.categoria);
+    if (quien) p.set("quien", quien);
     if (sp.q) p.set("q", sp.q);
     for (const [k, v] of Object.entries(extra)) p.set(k, v);
     return p.toString();
@@ -75,8 +87,11 @@ export default async function PaginaMovimientos({
 
       <FiltrosMovimientos
         categorias={categorias}
+        miembros={miembros}
+        usuarioActualId={ctx.user.id}
         tipo={tipo}
         categoryId={sp.categoria ?? ""}
+        quien={quien}
         texto={sp.q ?? ""}
       />
 
@@ -85,11 +100,11 @@ export default async function PaginaMovimientos({
           movimientos={resultado.movimientos}
           vacio={{
             titulo:
-              sp.q || sp.categoria || tipo !== "TODOS"
+              sp.q || sp.categoria || quien || tipo !== "TODOS"
                 ? "Nada coincide con estos filtros"
                 : "Este mes todavía está en blanco",
             descripcion:
-              sp.q || sp.categoria || tipo !== "TODOS"
+              sp.q || sp.categoria || quien || tipo !== "TODOS"
                 ? "Prueba con otros filtros o cambia de mes."
                 : "Registra el primer ingreso o gasto del mes y aparecerá aquí.",
             accion: <BotonRegistrar />,

@@ -1,5 +1,7 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
+import { esPersona, filtroPagador, type Alcance } from "@/lib/alcance";
 import { requireHogar } from "@/lib/auth/guard";
 import { resumenCredito, fechaCuota } from "@/lib/creditos";
 import { aNumero, prisma } from "@/lib/db";
@@ -24,24 +26,37 @@ import type {
 } from "@/lib/tipos";
 
 /** Ingresos, egresos y balance del mes, con el mes anterior para comparar. */
-export async function resumenDelMes(periodo: Periodo): Promise<ResumenMes> {
+export async function resumenDelMes(periodo: Periodo, alcance: Alcance): Promise<ResumenMes> {
   const ctx = await requireHogar();
   const actual = rangoDelMes(periodo);
   const previo = rangoDelMes(mesAnterior(periodo));
+  const dePersona = filtroPagador(alcance);
 
   const [sumasActual, sumasPrevio, cantidad] = await Promise.all([
     prisma.transaction.groupBy({
       by: ["type"],
-      where: { householdId: ctx.hogar.id, date: { gte: actual.desde, lt: actual.hasta } },
+      where: {
+        householdId: ctx.hogar.id,
+        ...dePersona,
+        date: { gte: actual.desde, lt: actual.hasta },
+      },
       _sum: { amount: true },
     }),
     prisma.transaction.groupBy({
       by: ["type"],
-      where: { householdId: ctx.hogar.id, date: { gte: previo.desde, lt: previo.hasta } },
+      where: {
+        householdId: ctx.hogar.id,
+        ...dePersona,
+        date: { gte: previo.desde, lt: previo.hasta },
+      },
       _sum: { amount: true },
     }),
     prisma.transaction.count({
-      where: { householdId: ctx.hogar.id, date: { gte: actual.desde, lt: actual.hasta } },
+      where: {
+        householdId: ctx.hogar.id,
+        ...dePersona,
+        date: { gte: actual.desde, lt: actual.hasta },
+      },
     }),
   ]);
 
@@ -69,11 +84,21 @@ export async function resumenDelMes(periodo: Periodo): Promise<ResumenMes> {
  * sabe agrupar por mes, y traer todos los movimientos del año para sumarlos en
  * Node sería mucho más caro.
  */
-export async function serieMensual(periodo: Periodo, meses = 12): Promise<PuntoSerie[]> {
+export async function serieMensual(
+  periodo: Periodo,
+  alcance: Alcance,
+  meses = 12,
+): Promise<PuntoSerie[]> {
   const ctx = await requireHogar();
   const periodos = ultimosMeses(periodo, meses);
   const desde = rangoDelMes(periodos[0]).desde;
   const hasta = rangoDelMes(periodos[periodos.length - 1]).hasta;
+
+  // Un fragmento parametrizado, no texto interpolado: el id sigue viajando
+  // como parámetro y no hay forma de inyectar SQL por la URL.
+  const soloPersona = esPersona(alcance)
+    ? Prisma.sql`AND "paidByUserId" = ${alcance.userId}`
+    : Prisma.empty;
 
   const filas = await prisma.$queryRaw<
     Array<{ periodo: string; type: string; total: number }>
@@ -85,6 +110,7 @@ export async function serieMensual(periodo: Periodo, meses = 12): Promise<PuntoS
     WHERE "householdId" = ${ctx.hogar.id}
       AND "date" >= ${desde}
       AND "date" < ${hasta}
+      ${soloPersona}
     GROUP BY 1, 2
   `;
 
@@ -110,7 +136,10 @@ export async function serieMensual(periodo: Periodo, meses = 12): Promise<PuntoS
 }
 
 /** Gastos del mes agrupados por categoría, de mayor a menor. */
-export async function gastosPorCategoria(periodo: Periodo): Promise<GastoPorCategoria[]> {
+export async function gastosPorCategoria(
+  periodo: Periodo,
+  alcance: Alcance,
+): Promise<GastoPorCategoria[]> {
   const ctx = await requireHogar();
   const { desde, hasta } = rangoDelMes(periodo);
 
@@ -118,6 +147,7 @@ export async function gastosPorCategoria(periodo: Periodo): Promise<GastoPorCate
     by: ["categoryId"],
     where: {
       householdId: ctx.hogar.id,
+      ...filtroPagador(alcance),
       type: "EGRESO",
       date: { gte: desde, lt: hasta },
     },
@@ -196,7 +226,10 @@ export async function proximosPagos(dias = 15): Promise<PagoProximo[]> {
         type: "EGRESO",
         nextRunDate: { lte: limite },
       },
-      include: { categoria: { select: { nombre: true } } },
+      include: {
+        categoria: { select: { nombre: true } },
+        responsable: { select: { nombre: true } },
+      },
       orderBy: { nextRunDate: "asc" },
     }),
     prisma.loan.findMany({
@@ -208,7 +241,7 @@ export async function proximosPagos(dias = 15): Promise<PagoProximo[]> {
   const pagos: PagoProximo[] = reglas.map((r) => ({
     id: `regla-${r.id}`,
     descripcion: r.descripcion,
-    detalle: r.categoria.nombre,
+    detalle: `${r.categoria.nombre} · paga ${r.responsable.nombre}`,
     monto: aNumero(r.amount),
     fecha: aFechaISO(r.nextRunDate),
     origen: "recurrente" as const,
@@ -243,13 +276,17 @@ export async function proximosPagos(dias = 15): Promise<PagoProximo[]> {
 }
 
 /** Los movimientos más recientes, para el bloque del final del dashboard. */
-export async function ultimosMovimientos(cantidad = 6): Promise<MovimientoVista[]> {
+export async function ultimosMovimientos(
+  alcance: Alcance,
+  cantidad = 6,
+): Promise<MovimientoVista[]> {
   const ctx = await requireHogar();
   const filas = await prisma.transaction.findMany({
-    where: { householdId: ctx.hogar.id },
+    where: { householdId: ctx.hogar.id, ...filtroPagador(alcance) },
     include: {
       categoria: { select: { id: true, nombre: true, icon: true, color: true } },
       autor: { select: { id: true, nombre: true } },
+      responsable: { select: { id: true, nombre: true } },
     },
     orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     take: cantidad,
@@ -264,6 +301,7 @@ export async function ultimosMovimientos(cantidad = 6): Promise<MovimientoVista[
     notas: t.notas,
     categoria: t.categoria,
     autor: t.autor,
+    responsable: t.responsable,
     loanId: t.loanId,
     esRecurrente: t.recurringRuleId !== null,
   }));

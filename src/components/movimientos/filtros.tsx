@@ -4,7 +4,7 @@ import { Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Entrada, Seleccion } from "@/components/ui/campos";
-import type { CategoriaVista } from "@/lib/tipos";
+import type { CategoriaVista, MiembroVista } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 
 /**
@@ -13,13 +13,19 @@ import { cn } from "@/lib/utils";
  */
 export function FiltrosMovimientos({
   categorias,
+  miembros,
+  usuarioActualId,
   tipo,
   categoryId,
+  quien,
   texto,
 }: {
   categorias: CategoriaVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   tipo: string;
   categoryId: string;
+  quien: string;
   texto: string;
 }) {
   const router = useRouter();
@@ -51,7 +57,7 @@ export function FiltrosMovimientos({
   const opciones = categorias.filter(
     (c) => tipo === "TODOS" || c.type === tipo,
   );
-  const hayFiltros = tipo !== "TODOS" || categoryId !== "" || texto !== "";
+  const hayFiltros = tipo !== "TODOS" || categoryId !== "" || quien !== "" || texto !== "";
 
   return (
     <div className="space-y-3">
@@ -115,10 +121,26 @@ export function FiltrosMovimientos({
           ))}
         </Seleccion>
 
+        {miembros.length > 1 && (
+          <Seleccion
+            value={quien}
+            onChange={(e) => aplicar({ quien: e.target.value })}
+            aria-label="Quién pagó o recibió"
+            className="h-9 w-auto min-w-40 text-sm"
+          >
+            <option value="">Cualquier persona</option>
+            {miembros.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.id === usuarioActualId ? `${m.nombre} (yo)` : m.nombre}
+              </option>
+            ))}
+          </Seleccion>
+        )}
+
         {hayFiltros && (
           <button
             type="button"
-            onClick={() => aplicar({ tipo: "", categoria: "", q: "" })}
+            onClick={() => aplicar({ tipo: "", categoria: "", quien: "", q: "" })}
             className="flex h-9 items-center gap-1 rounded-app px-2.5 text-xs font-medium text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
           >
             <X className="size-3.5" aria-hidden />

@@ -119,7 +119,14 @@ function Fila({
             )}
           </span>
           <span className="block truncate text-xs text-texto-suave">
-            {movimiento.categoria.nombre} · {movimiento.autor.nombre}
+            {movimiento.categoria.nombre} ·{" "}
+            {esIngreso ? "recibió" : "pagó"} {movimiento.responsable.nombre}
+            {/*
+              Solo se menciona a quien registró cuando NO es quien puso la
+              plata. Repetir el mismo nombre dos veces sería ruido.
+            */}
+            {movimiento.autor.id !== movimiento.responsable.id &&
+              ` · registró ${movimiento.autor.nombre}`}
           </span>
         </span>
 

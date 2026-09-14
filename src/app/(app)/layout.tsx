@@ -4,6 +4,7 @@ import { BarraLateral } from "@/components/layout/barra-lateral";
 import { BarraSuperiorMovil, NavegacionMovil } from "@/components/layout/navegacion-movil";
 import { ProveedorMovimiento } from "@/components/movimientos/proveedor-movimiento";
 import { creditosActivos } from "@/server/creditos";
+import { miembrosDelHogar } from "@/server/hogares";
 import { categoriasDelHogar } from "@/server/movimientos";
 
 /**
@@ -12,14 +13,20 @@ import { categoriasDelHogar } from "@/server/movimientos";
  */
 export default async function LayoutApp({ children }: { children: React.ReactNode }) {
   const ctx = await requireHogar();
-  const [categorias, creditos] = await Promise.all([
+  const [categorias, creditos, miembros] = await Promise.all([
     categoriasDelHogar(),
     creditosActivos(),
+    miembrosDelHogar(),
   ]);
 
   return (
     <MonedaProvider config={{ currency: ctx.hogar.currency, locale: ctx.hogar.locale }}>
-      <ProveedorMovimiento categorias={categorias} creditos={creditos}>
+      <ProveedorMovimiento
+        categorias={categorias}
+        creditos={creditos}
+        miembros={miembros}
+        usuarioActualId={ctx.user.id}
+      >
         <div className="min-h-dvh bg-fondo">
           <BarraLateral
             hogares={ctx.hogares}

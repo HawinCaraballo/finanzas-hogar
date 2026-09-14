@@ -65,6 +65,9 @@ export async function ejecutarRecurrentes(opciones?: {
         householdId: regla.householdId,
         categoryId: regla.categoryId,
         createdByUserId: autorId,
+        // El autor es un administrador porque la columna no admite nulos, pero
+        // la cuenta individual se guía por el responsable de la regla.
+        paidByUserId: regla.paidByUserId,
         type: regla.type,
         amount: regla.amount,
         date: fecha,

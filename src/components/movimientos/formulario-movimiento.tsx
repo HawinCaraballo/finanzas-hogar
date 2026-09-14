@@ -10,7 +10,12 @@ import { Boton } from "@/components/ui/button";
 import { AreaTexto, Campo, Entrada, Seleccion } from "@/components/ui/campos";
 import { iconoPorNombre } from "@/lib/iconos";
 import { aFechaISO } from "@/lib/periodo";
-import type { CategoriaVista, CreditoVista, MovimientoVista } from "@/lib/tipos";
+import type {
+  CategoriaVista,
+  CreditoVista,
+  MiembroVista,
+  MovimientoVista,
+} from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 import { movimientoSchema, type MovimientoInput } from "@/lib/validaciones";
 import {
@@ -28,12 +33,16 @@ import { CampoMonto } from "./campo-monto";
 export function FormularioMovimiento({
   categorias,
   creditos,
+  miembros,
+  usuarioActualId,
   movimiento,
   tipoInicial = "EGRESO",
   onListo,
 }: {
   categorias: CategoriaVista[];
   creditos: CreditoVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   movimiento?: MovimientoVista;
   tipoInicial?: "INGRESO" | "EGRESO";
   onListo: () => void;
@@ -63,6 +72,7 @@ export function FormularioMovimiento({
           descripcion: movimiento.descripcion,
           notas: movimiento.notas ?? "",
           loanId: movimiento.loanId ?? "",
+          paidByUserId: movimiento.responsable.id,
         }
       : {
           type: tipoInicial,
@@ -72,6 +82,7 @@ export function FormularioMovimiento({
           descripcion: "",
           notas: "",
           loanId: "",
+          paidByUserId: usuarioActualId,
         },
   });
 
@@ -227,6 +238,27 @@ export function FormularioMovimiento({
           />
         </Campo>
       </div>
+
+      {/*
+        Un hogar de una sola persona no necesita elegir pagador: sería un campo
+        con una única opción estorbando en el camino rápido.
+      */}
+      {miembros.length > 1 && (
+        <Campo
+          etiqueta={esIngreso ? "¿Quién lo recibió?" : "¿Quién lo pagó?"}
+          htmlFor="pagador"
+          ayuda="Define en qué cuenta individual entra este movimiento."
+          error={errors.paidByUserId?.message}
+        >
+          <Seleccion id="pagador" {...register("paidByUserId")}>
+            {miembros.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.id === usuarioActualId ? `${m.nombre} (yo)` : m.nombre}
+              </option>
+            ))}
+          </Seleccion>
+        </Campo>
+      )}
 
       <div>
         <button

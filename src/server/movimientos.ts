@@ -52,6 +52,7 @@ export async function listarMovimientos(filtros: FiltrosMovimientos): Promise<{
       include: {
         categoria: { select: { id: true, nombre: true, icon: true, color: true } },
         autor: { select: { id: true, nombre: true } },
+        responsable: { select: { id: true, nombre: true } },
       },
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
       skip: (pagina - 1) * POR_PAGINA,
@@ -83,6 +84,7 @@ function construirWhere(householdId: string, f: FiltrosMovimientos): Prisma.Tran
   }
   if (f.type && f.type !== "TODOS") where.type = f.type;
   if (f.categoryId) where.categoryId = f.categoryId;
+  if (f.paidByUserId) where.paidByUserId = f.paidByUserId;
   if (f.texto?.trim()) {
     const texto = f.texto.trim();
     where.OR = [
@@ -97,6 +99,7 @@ type FilaConRelaciones = Prisma.TransactionGetPayload<{
   include: {
     categoria: { select: { id: true; nombre: true; icon: true; color: true } };
     autor: { select: { id: true; nombre: true } };
+    responsable: { select: { id: true; nombre: true } };
   };
 }>;
 
@@ -110,6 +113,7 @@ function aVista(t: FilaConRelaciones): MovimientoVista {
     notas: t.notas,
     categoria: t.categoria,
     autor: t.autor,
+    responsable: t.responsable,
     loanId: t.loanId,
     esRecurrente: t.recurringRuleId !== null,
   };
@@ -124,11 +128,15 @@ export async function crearMovimiento(entrada: unknown): Promise<Resultado> {
       return fallo("Esa categoría no existe o no corresponde al tipo elegido.");
     }
 
+    const paidByUserId = await pagadorValido(ctx.hogar.id, datos.paidByUserId, ctx.user.id);
+    if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
+
     await prisma.transaction.create({
       data: {
         householdId: ctx.hogar.id,
         categoryId: datos.categoryId,
         createdByUserId: ctx.user.id,
+        paidByUserId,
         type: datos.type,
         amount: datos.amount,
         date: parseFechaISO(datos.date),
@@ -163,10 +171,14 @@ export async function actualizarMovimiento(entrada: unknown): Promise<Resultado>
       return fallo("Esa categoría no existe o no corresponde al tipo elegido.");
     }
 
+    const paidByUserId = await pagadorValido(ctx.hogar.id, datos.paidByUserId, actual.paidByUserId);
+    if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
+
     await prisma.transaction.update({
       where: { id: datos.id },
       data: {
         categoryId: datos.categoryId,
+        paidByUserId,
         type: datos.type,
         amount: datos.amount,
         date: parseFechaISO(datos.date),
@@ -207,6 +219,24 @@ async function categoriaValida(householdId: string, categoryId: string, type: st
     where: { id: categoryId, householdId, type: type as "INGRESO" | "EGRESO" },
   });
   return categoria !== null;
+}
+
+/**
+ * Un movimiento solo puede atribuirse a alguien que viva en el hogar. Sin esta
+ * comprobación, un id enviado a mano metería a un extraño en las cuentas.
+ * Devuelve null si el id no pertenece al hogar.
+ */
+async function pagadorValido(
+  householdId: string,
+  candidato: string | undefined,
+  porDefecto: string,
+): Promise<string | null> {
+  if (!candidato || candidato === porDefecto) return porDefecto;
+  const membresia = await prisma.householdMember.findUnique({
+    where: { userId_householdId: { userId: candidato, householdId } },
+    select: { userId: true },
+  });
+  return membresia?.userId ?? null;
 }
 
 async function creditoValido(householdId: string, loanId?: string): Promise<string | null> {
