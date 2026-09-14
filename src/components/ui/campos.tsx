@@ -5,8 +5,12 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/*
+  Los campos van con radio de 6 px: el manual separa a propósito la píldora de
+  los botones del rectángulo casi recto de los inputs.
+*/
 const baseCampo =
-  "w-full rounded-app border border-borde bg-superficie px-3 text-texto placeholder:text-texto-suave/70 transition-colors focus:border-marca focus:outline-none disabled:opacity-60";
+  "w-full rounded-campo border border-borde bg-superficie px-3 text-body-sm text-texto placeholder:text-texto-suave/70 transition-colors focus:border-marca focus:outline-none disabled:opacity-60";
 
 export const Etiqueta = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -14,7 +18,7 @@ export const Etiqueta = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root
     ref={ref}
-    className={cn("text-sm font-medium text-texto", className)}
+    className={cn("text-body-sm font-medium text-texto", className)}
     {...props}
   />
 ));
@@ -78,16 +82,16 @@ export function Campo({
   const idError = `${htmlFor}-error`;
   const idAyuda = `${htmlFor}-ayuda`;
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-2", className)}>
       <Etiqueta htmlFor={htmlFor}>{etiqueta}</Etiqueta>
       {children}
       {ayuda && !error && (
-        <p id={idAyuda} className="text-xs text-texto-suave">
+        <p id={idAyuda} className="text-caption text-texto-suave">
           {ayuda}
         </p>
       )}
       {error && (
-        <p id={idError} role="alert" className="text-xs font-medium text-egreso">
+        <p id={idError} role="alert" className="text-caption font-medium text-egreso">
           {error}
         </p>
       )}

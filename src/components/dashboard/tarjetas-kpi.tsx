@@ -50,12 +50,12 @@ export function TarjetasKpi({ resumen }: { resumen: ResumenMes }) {
       {tarjetas.map((t) => {
         const variacion = variacionPorcentual(t.valor, t.previo);
         return (
-          <div key={t.etiqueta} className="rounded-app border border-borde bg-superficie p-4">
+          <div key={t.etiqueta} className="rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40 p-5 sm:p-6">
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs font-medium uppercase tracking-wide text-texto-suave">
                 {t.etiqueta}
               </p>
-              <span className={cn("grid size-8 place-items-center rounded-app", t.fondo, t.clase)}>
+              <span className={cn("grid size-8 place-items-center rounded-campo", t.fondo, t.clase)}>
                 <t.icono className="size-4" aria-hidden />
               </span>
             </div>

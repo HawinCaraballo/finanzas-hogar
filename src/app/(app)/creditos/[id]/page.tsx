@@ -34,7 +34,7 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <Link
         href="/creditos"
         className="inline-flex items-center gap-1.5 text-sm font-medium text-texto-suave transition-colors hover:text-texto"
@@ -45,7 +45,7 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
 
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-semibold tracking-tight text-texto">{credito.nombre}</h1>
+          <h1 className="text-heading-sm font-medium text-texto">{credito.nombre}</h1>
           <Insignia tono={credito.activo ? "marca" : "ingreso"}>
             {credito.activo ? ETIQUETA_CREDITO[credito.kind] : "Pagado"}
           </Insignia>

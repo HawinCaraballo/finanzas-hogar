@@ -64,10 +64,10 @@ export default async function PaginaMovimientos({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">Movimientos</h1>
+          <h1 className="text-heading-sm font-medium text-texto">Movimientos</h1>
           <p className="text-sm text-texto-suave">
             {resultado.total === 0
               ? "Ningún movimiento con estos filtros"

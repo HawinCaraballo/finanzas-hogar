@@ -30,7 +30,7 @@ export default async function PaginaInvitacion({
 
   if (problema || !invitacion) {
     return (
-      <div className="rounded-app border border-borde bg-superficie p-6 text-center">
+      <div className="rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40 p-6 text-center">
         <h2 className="text-base font-semibold text-texto">No pudimos abrir la invitación</h2>
         <p className="mt-2 text-sm text-texto-suave">{problema}</p>
         <Boton asChild variante="secundario" className="mt-5 w-full">
@@ -47,7 +47,7 @@ export default async function PaginaInvitacion({
   }
 
   return (
-    <div className="rounded-app border border-borde bg-superficie p-6 text-center">
+    <div className="rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40 p-6 text-center">
       <h2 className="text-base font-semibold text-texto">
         Te invitaron a {invitacion.household.nombre}
       </h2>

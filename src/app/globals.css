@@ -3,45 +3,148 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
-  Paleta: base neutra fría, verde azulado como color de marca, y dos colores
-  semánticos que se repiten en toda la app — verde = entra dinero,
-  rosa = sale dinero. Nunca se usan para otra cosa.
+  Sistema visual monday.com: lienzo blanco, violeta como única voz de marca y
+  superficies pastel tipo caja de crayones. La densidad es "cómoda": mucho aire,
+  bordes muy redondeados y una sola sombra suave teñida de lavanda.
+
+  Dos capas de tokens:
+    1. La paleta cruda del manual (nombres del propio manual: violet, ink, mint…).
+    2. Los tokens semánticos de la app (--marca, --ingreso, --egreso…), que
+       apuntan a la paleta. Los componentes solo usan los semánticos, así que
+       repintar la app entera vuelve a ser cuestión de tocar este bloque.
 */
+
+@theme {
+  /* Paleta del manual, tal cual. Disponible como bg-mint, text-ink, etc. */
+  --color-violeta: #6161ff;
+  --color-ink: #333333;
+  --color-slate: #535768;
+  --color-iron: #808080;
+  --color-fog: #cacbcd;
+  --color-mist: #d0d4e4;
+  --color-pebble: #dddfeb;
+  --color-cloud: #f5f6f8;
+  --color-snow: #ffffff;
+  --color-mint: #bcfe90;
+  --color-sky: #abf0ff;
+  --color-apricot: #ff8940;
+  --color-lavender: #eddff7;
+  --color-periwinkle: #e7ecff;
+  --color-cornflower: #93beff;
+  --color-aqua: #d1faff;
+  --color-cotton-candy: #e98dfe;
+  --color-ultra-violet: #9450fd;
+  --color-electric-cyan: #3ac9ff;
+  --color-forest: #2a5c4e;
+  --color-peony: #fcd0f8;
+  --color-periwinkle-wash: #dbdbff;
+
+  /*
+    Escala tipográfica del manual. Los tamaños de display (48/64 px) son para
+    portadas; dentro de la app el techo real es heading-sm.
+  */
+  --text-caption: 12px;
+  --text-caption--line-height: 1.45;
+  --text-caption--letter-spacing: -0.12px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: -0.16px;
+  --text-subheading: 20px;
+  --text-subheading--line-height: 1.4;
+  --text-subheading--letter-spacing: -0.22px;
+  --text-heading-sm: 24px;
+  --text-heading-sm--line-height: 1.3;
+  --text-heading-sm--letter-spacing: -0.36px;
+  --text-heading: 36px;
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.54px;
+  --text-heading-lg: 48px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: -0.96px;
+  --text-display: 64px;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -2.56px;
+
+  /*
+    Los cuatro radios del manual. "app" = tarjetas (24 px), "panel" = capas
+    flotantes (16 px), "campo" = inputs, badges y navegación (6 px) y
+    "boton" = la píldora, que el manual marca como innegociable.
+  */
+  --radius-app: 24px;
+  --radius-panel: 16px;
+  --radius-campo: 6px;
+  --radius-imagen: 12px;
+  --radius-boton: 9999px;
+
+  /* Una única sombra suave teñida de lavanda; nada de sombras duras. */
+  --shadow-suave: rgba(205, 208, 223, 0.4) 0px 2px 48px 0px;
+  --shadow-elevado: rgba(0, 0, 0, 0.15) 0px 5px 45px 0px;
+  --shadow-flotante: rgba(0, 0, 0, 0.15) 0px 4px 40px 0px;
+}
+
 :root {
-  --fondo: oklch(0.985 0.003 240);
-  --superficie: oklch(1 0 0);
-  --superficie-2: oklch(0.972 0.004 240);
-  --texto: oklch(0.21 0.02 250);
-  --texto-suave: oklch(0.52 0.02 250);
-  --borde: oklch(0.91 0.006 250);
-  --marca: oklch(0.55 0.11 185);
-  --marca-suave: oklch(0.95 0.03 185);
-  --marca-texto: oklch(1 0 0);
-  --ingreso: oklch(0.62 0.15 155);
-  --ingreso-suave: oklch(0.95 0.05 155);
-  --egreso: oklch(0.62 0.19 18);
-  --egreso-suave: oklch(0.96 0.03 18);
-  --alerta: oklch(0.75 0.15 75);
-  --anillo: oklch(0.55 0.11 185 / 0.45);
-  --radio: 0.75rem;
+  --fondo: var(--color-cloud);
+  --superficie: var(--color-snow);
+  --superficie-2: #eef0f5;
+  --texto: var(--color-ink);
+  --texto-suave: var(--color-slate);
+  --borde: var(--color-mist);
+  --marca: var(--color-violeta);
+  /*
+    El violeta de marca sobre blanco queda en 4.5:1 justo. Para texto e íconos
+    sobre fondos claros se usa esta versión un punto más oscura, que aguanta
+    también encima del tinte periwinkle (5.3:1).
+  */
+  --marca-fuerte: #4a4ae0;
+  --marca-suave: var(--color-periwinkle);
+  --marca-texto: var(--color-snow);
+
+  /*
+    Verde = entra dinero, rosa = sale dinero. Nunca se usan para otra cosa.
+    El manual no trae un rojo ni un verde legibles para cifras, así que estos
+    dos se derivan de su paleta: el verde es Forest y el rosa sale del tono
+    rgb(252,82,125) del prisma, oscurecido hasta pasar AA sobre blanco.
+  */
+  --ingreso: var(--color-forest);
+  --ingreso-suave: var(--color-mint);
+  --egreso: #bf2455;
+  --egreso-suave: #ffe6f0;
+  --alerta: #a85410;
+  --alerta-suave: #ffeddc;
 }
 
 .dark {
-  --fondo: oklch(0.17 0.012 255);
-  --superficie: oklch(0.215 0.014 255);
-  --superficie-2: oklch(0.255 0.015 255);
-  --texto: oklch(0.96 0.004 250);
-  --texto-suave: oklch(0.7 0.018 250);
-  --borde: oklch(0.32 0.015 255);
-  --marca: oklch(0.72 0.11 185);
-  --marca-suave: oklch(0.3 0.05 185);
-  --marca-texto: oklch(0.17 0.012 255);
-  --ingreso: oklch(0.75 0.15 155);
-  --ingreso-suave: oklch(0.3 0.06 155);
-  --egreso: oklch(0.71 0.17 18);
-  --egreso-suave: oklch(0.31 0.07 18);
-  --alerta: oklch(0.8 0.14 75);
-  --anillo: oklch(0.72 0.11 185 / 0.5);
+  /*
+    El manual es solo tema claro, pero la app ya trae interruptor de tema. En
+    vez de quitarlo, el modo oscuro se rederiva del mismo violeta y de los
+    mismos pasteles, subidos de luminosidad para que sigan pasando AA.
+  */
+  --fondo: #14151d;
+  --superficie: #1e1f2b;
+  --superficie-2: #282a38;
+  --texto: #f2f3f7;
+  --texto-suave: #a9adc4;
+  --borde: #343747;
+  --marca: #8f8fff;
+  --marca-fuerte: #a5a5ff;
+  --marca-suave: #2b2b52;
+  --marca-texto: #14151d;
+  --ingreso: #7fe0b4;
+  --ingreso-suave: #1f3d34;
+  --egreso: #ff7fa5;
+  --egreso-suave: #3d1f2b;
+  --alerta: #ffb26b;
+  --alerta-suave: #3d2c19;
+
+  /*
+    La sombra NO se corrige desde aquí: Tailwind v4 incrusta el color dentro de
+    la utilidad en vez de leer la variable, así que redefinir --shadow-suave en
+    este bloque sería CSS muerto. Sobre lienzo oscuro la sombra lavanda se lee
+    como un halo, y por eso las superficies de tarjeta llevan la variante
+    "dark:shadow-black/40", que cambia solo el color y conserva la geometría.
+  */
 }
 
 @theme inline {
@@ -52,6 +155,7 @@
   --color-texto-suave: var(--texto-suave);
   --color-borde: var(--borde);
   --color-marca: var(--marca);
+  --color-marca-fuerte: var(--marca-fuerte);
   --color-marca-suave: var(--marca-suave);
   --color-marca-texto: var(--marca-texto);
   --color-ingreso: var(--ingreso);
@@ -59,8 +163,8 @@
   --color-egreso: var(--egreso);
   --color-egreso-suave: var(--egreso-suave);
   --color-alerta: var(--alerta);
-  --radius-app: var(--radio);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-alerta-suave: var(--alerta-suave);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 @layer base {
@@ -74,12 +178,26 @@
     background-color: var(--fondo);
     color: var(--texto);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    letter-spacing: var(--text-body--letter-spacing);
     -webkit-font-smoothing: antialiased;
+  }
+  /*
+    El manual pide tracking negativo en los titulares: cuanto más grande el
+    texto, más se cierra. Esto lo aplica sin tener que repetirlo por pantalla.
+  */
+  h1 {
+    letter-spacing: var(--text-heading-sm--letter-spacing);
+  }
+  h2,
+  h3 {
+    letter-spacing: var(--text-subheading--letter-spacing);
   }
   /* Los montos grandes se leen mejor con cifras de ancho fijo. */
   .cifra {
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
   }
   :focus-visible {
     outline: 2px solid var(--marca);
@@ -100,11 +218,34 @@
   }
   @media (min-width: 768px) {
     .pb-navegacion {
-      padding-bottom: 2rem;
+      padding-bottom: 2.5rem;
     }
   }
   .scrollbar-fina {
     scrollbar-width: thin;
+  }
+
+  /*
+    Degradado rosa→naranja del manual. Reservado para el titular de portada:
+    nunca sobre texto corrido ni sobre fondos de botón.
+  */
+  .texto-degradado {
+    background-image: linear-gradient(90deg, #fe81e4, #fe81e4 31%, #fda900 88%);
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Prisma cónico de marca: solo el logotipo y los separadores. */
+  .marca-prisma {
+    background-image: conic-gradient(
+      from 270deg,
+      rgb(129, 129, 255) 15%,
+      rgb(51, 219, 219) 40%,
+      rgb(51, 213, 142) 55%,
+      rgb(255, 214, 51) 65%,
+      rgb(252, 82, 125) 85%,
+      rgb(129, 129, 255) 100%
+    );
   }
 }
 

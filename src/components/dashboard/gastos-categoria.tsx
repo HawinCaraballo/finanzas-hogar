@@ -58,7 +58,7 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
                 if (!active || !payload?.length) return null;
                 const p = payload[0].payload as GastoPorCategoria;
                 return (
-                  <div className="rounded-app border border-borde bg-superficie px-3 py-2 text-xs shadow-lg">
+                  <div className="rounded-panel border border-borde bg-superficie px-3 py-2 text-xs shadow-flotante">
                     <p className="font-semibold text-texto">{p.nombre}</p>
                     <p className="cifra text-texto-suave">
                       {moneda.format(p.total)} · {p.porcentaje.toFixed(0)} %

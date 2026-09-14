@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Crear cuenta" };
 
 export default function PaginaRegistro() {
   return (
-    <div className="rounded-app border border-borde bg-superficie p-6">
+    <div className="rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40 p-6">
       <h2 className="text-base font-semibold text-texto">Crea tu cuenta</h2>
       <p className="mb-5 mt-1 text-sm text-texto-suave">
         En el siguiente paso creas tu hogar o te unes a uno.
@@ -16,7 +16,7 @@ export default function PaginaRegistro() {
 
       <p className="mt-5 text-center text-sm text-texto-suave">
         ¿Ya tienes cuenta?{" "}
-        <Link href="/login" className="font-medium text-marca hover:underline">
+        <Link href="/login" className="font-medium text-marca-fuerte hover:underline">
           Inicia sesión
         </Link>
       </p>

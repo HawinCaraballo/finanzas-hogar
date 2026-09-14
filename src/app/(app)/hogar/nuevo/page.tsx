@@ -18,7 +18,7 @@ export default function PaginaNuevoHogar() {
       </Link>
 
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-texto">Crear otro hogar</h1>
+        <h1 className="text-heading-sm font-medium text-texto">Crear otro hogar</h1>
         <p className="text-sm text-texto-suave">
           Útil si administras más de una casa. Cada hogar tiene sus propias categorías,
           movimientos y miembros.

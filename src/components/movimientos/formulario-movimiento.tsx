@@ -138,7 +138,7 @@ export function FormularioMovimiento({
       <div
         role="radiogroup"
         aria-label="Tipo de movimiento"
-        className="grid grid-cols-2 gap-1 rounded-app bg-superficie-2 p-1"
+        className="grid grid-cols-2 gap-1 rounded-boton bg-superficie-2 p-1"
       >
         {(
           [
@@ -153,7 +153,7 @@ export function FormularioMovimiento({
             aria-checked={tipo === op.valor}
             onClick={() => cambiarTipo(op.valor)}
             className={cn(
-              "h-11 rounded-[0.5rem] text-sm font-semibold transition-colors",
+              "h-11 rounded-boton text-sm font-semibold transition-colors",
               tipo === op.valor ? op.activo : "text-texto-suave hover:text-texto",
             )}
           >
@@ -192,7 +192,7 @@ export function FormularioMovimiento({
                 onClick={() => setValue("categoryId", c.id, { shouldValidate: true })}
                 aria-pressed={elegida}
                 className={cn(
-                  "flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-app border p-2 text-center transition-colors",
+                  "flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-panel border p-2 text-center transition-colors",
                   elegida
                     ? "border-transparent ring-2 ring-marca"
                     : "border-borde hover:bg-superficie-2",

@@ -335,7 +335,7 @@ function FormularioRecurrente({
         </Campo>
       </div>
 
-      <label className="flex cursor-pointer items-start gap-3 rounded-app border border-borde p-3">
+      <label className="flex cursor-pointer items-start gap-3 rounded-panel border border-borde p-3">
         <input
           type="checkbox"
           className="mt-0.5 size-4 accent-[var(--marca)]"

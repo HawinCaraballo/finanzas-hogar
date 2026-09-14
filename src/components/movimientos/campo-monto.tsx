@@ -64,7 +64,7 @@ export function CampoMonto({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-app border-2 px-4 py-3 transition-colors",
+        "flex items-center gap-2 rounded-campo border-2 px-4 py-3 transition-colors",
         invalido
           ? "border-egreso"
           : tono === "ingreso"

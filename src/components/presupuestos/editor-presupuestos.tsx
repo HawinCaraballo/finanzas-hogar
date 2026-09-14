@@ -55,7 +55,7 @@ export function EditorPresupuestos({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-app border border-borde bg-superficie p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40 p-5 sm:p-6">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-texto-suave">
             Presupuestado este mes

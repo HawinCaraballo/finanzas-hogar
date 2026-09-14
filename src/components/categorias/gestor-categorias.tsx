@@ -64,7 +64,7 @@ export function GestorCategorias({
           <button
             type="button"
             onClick={() => setVerArchivadas((v) => !v)}
-            className="text-xs font-medium text-marca hover:underline"
+            className="text-xs font-medium text-marca-fuerte hover:underline"
           >
             {verArchivadas ? "Ocultar" : "Ver"} archivadas ({archivadas})
           </button>
@@ -296,7 +296,7 @@ function FormularioCategoria({
 
       <fieldset>
         <legend className="mb-2 text-sm font-medium text-texto">Ícono</legend>
-        <div className="scrollbar-fina grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-app border border-borde p-2 sm:grid-cols-8">
+        <div className="scrollbar-fina grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-panel border border-borde p-2 sm:grid-cols-8">
           {NOMBRES_ICONOS.map((nombre) => {
             const Icono = iconoPorNombre(nombre);
             return (
@@ -307,9 +307,9 @@ function FormularioCategoria({
                 aria-label={nombre}
                 aria-pressed={icono === nombre}
                 className={cn(
-                  "grid size-9 place-items-center rounded-app transition-colors",
+                  "grid size-9 place-items-center rounded-campo transition-colors",
                   icono === nombre
-                    ? "bg-marca-suave text-marca"
+                    ? "bg-marca-suave text-marca-fuerte"
                     : "text-texto-suave hover:bg-superficie-2",
                 )}
               >

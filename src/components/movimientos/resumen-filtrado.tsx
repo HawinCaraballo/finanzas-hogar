@@ -25,7 +25,7 @@ export function ResumenFiltrado({
   ];
 
   return (
-    <dl className="grid grid-cols-3 divide-x divide-borde rounded-app border border-borde bg-superficie">
+    <dl className="grid grid-cols-3 divide-x divide-borde rounded-app border border-borde bg-superficie shadow-suave dark:shadow-black/40">
       {items.map((i) => (
         <div key={i.etiqueta} className="px-3 py-2.5 text-center sm:px-4">
           <dt className="text-[11px] font-medium uppercase tracking-wide text-texto-suave">

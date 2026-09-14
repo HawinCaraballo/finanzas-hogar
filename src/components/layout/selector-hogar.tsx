@@ -43,12 +43,12 @@ export function SelectorHogar({
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         className={cn(
-          "flex min-w-0 items-center gap-2 rounded-app px-2 py-1.5 text-left transition-colors hover:bg-superficie-2 disabled:opacity-60",
+          "flex min-w-0 items-center gap-2 rounded-campo px-2 py-1.5 text-left transition-colors hover:bg-superficie-2 disabled:opacity-60",
           className,
         )}
         disabled={pendiente}
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-app bg-marca-suave text-marca">
+        <span className="grid size-8 shrink-0 place-items-center rounded-campo bg-marca-suave text-marca-fuerte">
           <House className="size-4" aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ export function SelectorHogar({
         <DropdownMenu.Content
           align="start"
           sideOffset={6}
-          className="z-50 min-w-56 rounded-app border border-borde bg-superficie p-1 shadow-lg"
+          className="z-50 min-w-56 rounded-panel border border-borde bg-superficie p-1 shadow-flotante"
         >
           <DropdownMenu.Label className="px-2 py-1.5 text-[11px] font-medium uppercase tracking-wide text-texto-suave">
             Tus hogares
@@ -75,11 +75,11 @@ export function SelectorHogar({
             <DropdownMenu.Item
               key={h.id}
               onSelect={() => elegir(h.id)}
-              className="flex cursor-pointer items-center gap-2 rounded-[0.5rem] px-2 py-2 text-sm text-texto outline-none data-[highlighted]:bg-superficie-2"
+              className="flex cursor-pointer items-center gap-2 rounded-campo px-2 py-2 text-sm text-texto outline-none data-[highlighted]:bg-superficie-2"
             >
               <span className="min-w-0 flex-1 truncate">{h.nombre}</span>
               <span className="text-[11px] text-texto-suave">{h.currency}</span>
-              {h.id === activo.id && <Check className="size-4 text-marca" aria-hidden />}
+              {h.id === activo.id && <Check className="size-4 text-marca-fuerte" aria-hidden />}
             </DropdownMenu.Item>
           ))}
 
@@ -88,7 +88,7 @@ export function SelectorHogar({
           <DropdownMenu.Item asChild>
             <a
               href="/hogar/nuevo"
-              className="flex cursor-pointer items-center gap-2 rounded-[0.5rem] px-2 py-2 text-sm text-texto outline-none data-[highlighted]:bg-superficie-2"
+              className="flex cursor-pointer items-center gap-2 rounded-campo px-2 py-2 text-sm text-texto outline-none data-[highlighted]:bg-superficie-2"
             >
               <Plus className="size-4" aria-hidden />
               Crear otro hogar

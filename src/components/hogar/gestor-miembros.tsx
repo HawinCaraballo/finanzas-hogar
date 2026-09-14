@@ -183,7 +183,7 @@ export function GestorMiembros({
                 <p className="text-sm text-texto">
                   Listo. Comparte este enlace con la persona; vence en 7 días.
                 </p>
-                <div className="flex items-center gap-2 rounded-app border border-borde bg-superficie-2 p-3">
+                <div className="flex items-center gap-2 rounded-panel border border-borde bg-superficie-2 p-3">
                   <code className="min-w-0 flex-1 truncate text-xs text-texto">{enlaceNuevo}</code>
                   <BotonCopiar enlace={enlaceNuevo} />
                 </div>

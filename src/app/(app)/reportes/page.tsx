@@ -35,10 +35,10 @@ export default async function PaginaReportes({
   const hayGastos = filas.some((f) => f.egresos > 0);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">Reportes</h1>
+          <h1 className="text-heading-sm font-medium text-texto">Reportes</h1>
           <p className="text-sm text-texto-suave">
             Quién puso qué en <span className="capitalize">{nombrePeriodo(periodo)}</span>
           </p>

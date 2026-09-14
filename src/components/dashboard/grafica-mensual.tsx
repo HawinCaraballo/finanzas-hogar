@@ -50,7 +50,7 @@ export function GraficaMensual({ datos }: { datos: PuntoSerie[] }) {
               if (!active || !payload?.length) return null;
               const punto = payload[0].payload as PuntoSerie;
               return (
-                <div className="rounded-app border border-borde bg-superficie p-3 text-xs shadow-lg">
+                <div className="rounded-panel border border-borde bg-superficie p-3 text-xs shadow-flotante">
                   <p className="mb-1.5 font-semibold capitalize text-texto">{label}</p>
                   <Fila etiqueta="Ingresos" valor={moneda.format(punto.ingresos)} color="var(--ingreso)" />
                   <Fila etiqueta="Gastos" valor={moneda.format(punto.egresos)} color="var(--egreso)" />

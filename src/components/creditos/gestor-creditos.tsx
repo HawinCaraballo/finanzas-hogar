@@ -318,7 +318,7 @@ function FormularioCredito({
         <button
           type="button"
           onClick={() => setValue("installmentAmount", sugerida, { shouldValidate: true })}
-          className="w-full rounded-app bg-marca-suave px-3 py-2 text-left text-xs text-marca transition-opacity hover:opacity-80"
+          className="w-full rounded-campo bg-marca-suave px-3 py-2 text-left text-xs text-marca-fuerte transition-opacity hover:opacity-80"
         >
           Con esos datos la cuota sería <strong>{moneda.format(sugerida)}</strong>. Tócalo para
           usarla.

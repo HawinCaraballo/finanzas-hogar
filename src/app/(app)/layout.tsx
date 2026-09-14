@@ -40,8 +40,8 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
             usuario={{ nombre: ctx.user.nombre, email: ctx.user.email }}
           />
 
-          <main className="pb-navegacion md:pl-60">
-            <div className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-7">{children}</div>
+          <main className="pb-navegacion md:pl-64">
+            <div className="mx-auto w-full max-w-[1200px] px-4 py-6 sm:px-8 sm:py-10">{children}</div>
           </main>
 
           <NavegacionMovil />

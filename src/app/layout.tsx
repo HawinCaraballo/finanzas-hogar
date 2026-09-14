@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const inter = Inter({
+/**
+ * Poppins es la única tipografía del sistema: geométrica y de remates
+ * redondeados, hace juego con los botones píldora y las tarjetas de 24 px.
+ * Peso 300 solo para titulares grandes; 500 para etiquetas de interfaz.
+ */
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -23,14 +29,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f1720" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f6f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#14151d" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={inter.variable} suppressHydrationWarning>
+    <html lang="es" className={poppins.variable} suppressHydrationWarning>
       <head>
         {/*
           Aplica el tema antes del primer pintado para que no haya un
