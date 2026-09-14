@@ -5,8 +5,13 @@ import * as LabelPrimitive from "@radix-ui/react-label";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/*
+  Radio de 10 px, el valor por defecto del manual. El borde usa el tono cálido
+  de trazo y no el de la línea interior: una línea piedra sobre blanco es tan
+  tenue que el campo dejaría de encontrarse.
+*/
 const baseCampo =
-  "w-full rounded-app border border-borde bg-superficie px-3 text-texto placeholder:text-texto-suave/70 transition-colors focus:border-marca focus:outline-none disabled:opacity-60";
+  "w-full rounded-app border border-borde-campo bg-superficie px-3 text-caption text-texto placeholder:text-texto-suave/60 transition-colors focus:border-marca-fuerte focus:outline-none disabled:opacity-60";
 
 export const Etiqueta = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
@@ -14,7 +19,7 @@ export const Etiqueta = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root
     ref={ref}
-    className={cn("text-sm font-medium text-texto", className)}
+    className={cn("text-caption font-medium text-texto", className)}
     {...props}
   />
 ));
@@ -78,16 +83,16 @@ export function Campo({
   const idError = `${htmlFor}-error`;
   const idAyuda = `${htmlFor}-ayuda`;
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("space-y-2", className)}>
       <Etiqueta htmlFor={htmlFor}>{etiqueta}</Etiqueta>
       {children}
       {ayuda && !error && (
-        <p id={idAyuda} className="text-xs text-texto-suave">
+        <p id={idAyuda} className="text-micro text-texto-suave">
           {ayuda}
         </p>
       )}
       {error && (
-        <p id={idError} role="alert" className="text-xs font-medium text-egreso">
+        <p id={idError} role="alert" className="text-micro font-medium text-peligro">
           {error}
         </p>
       )}

@@ -74,7 +74,7 @@ export function CampoMonto({
     >
       <span
         className={cn(
-          "text-xl font-semibold",
+          "text-heading font-semibold",
           tono === "ingreso" ? "text-ingreso" : "text-egreso",
         )}
         aria-hidden
@@ -92,7 +92,7 @@ export function CampoMonto({
         placeholder="0"
         aria-invalid={invalido}
         className={cn(
-          "cifra w-full bg-transparent text-right text-2xl font-semibold outline-none placeholder:text-texto-suave/50",
+          "cifra w-full bg-transparent text-right text-heading font-semibold outline-none placeholder:text-texto-suave/50",
           tono === "ingreso" ? "text-ingreso" : "text-egreso",
         )}
       />

@@ -47,7 +47,7 @@ export function BarrasMiembros({
       <div
         role="radiogroup"
         aria-label="Qué comparar"
-        className="flex w-fit gap-1 rounded-app bg-superficie-2 p-1"
+        className="flex w-fit gap-1 rounded-pastilla bg-superficie-2 p-1"
       >
         {(
           [
@@ -62,7 +62,7 @@ export function BarrasMiembros({
             aria-checked={metrica === op.valor}
             onClick={() => setMetrica(op.valor)}
             className={cn(
-              "h-8 rounded-[0.4rem] px-3 text-xs font-medium transition-colors",
+              "h-8 rounded-pastilla px-3 text-micro font-medium transition-colors",
               metrica === op.valor
                 ? "bg-superficie text-texto shadow-sm"
                 : "text-texto-suave hover:text-texto",
@@ -97,7 +97,7 @@ export function BarrasMiembros({
                 if (!active || !payload?.length) return null;
                 const total = payload.reduce((acc, p) => acc + Number(p.value ?? 0), 0);
                 return (
-                  <div className="rounded-app border border-borde bg-superficie p-3 text-xs shadow-lg">
+                  <div className="rounded-app bg-superficie p-3 text-micro flotante">
                     <p className="mb-1.5 font-semibold capitalize text-texto">{label}</p>
                     {payload.map((p) => {
                       const miembro = miembros.find((m) => m.id === p.dataKey);
@@ -188,7 +188,7 @@ export function DonaMiembros({
                 if (!active || !payload?.length) return null;
                 const f = payload[0].payload as FilaComparativa;
                 return (
-                  <div className="rounded-app border border-borde bg-superficie px-3 py-2 text-xs shadow-lg">
+                  <div className="rounded-app bg-superficie px-3 py-2 text-micro flotante">
                     <p className="font-semibold text-texto">{f.nombre}</p>
                     <p className="cifra text-texto-suave">
                       {moneda.format(f.egresos)} · {f.participacionEgresos.toFixed(0)} %
@@ -202,8 +202,8 @@ export function DonaMiembros({
 
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div>
-            <p className="text-[11px] uppercase tracking-wide text-texto-suave">Gastos</p>
-            <p className="cifra text-sm font-semibold text-texto">
+            <p className="text-micro uppercase tracking-wide text-texto-suave">Gastos</p>
+            <p className="cifra text-caption font-semibold text-texto">
               {moneda.formatCompacto(total)}
             </p>
           </div>
@@ -212,7 +212,7 @@ export function DonaMiembros({
 
       <ul className="min-w-0 flex-1 space-y-2">
         {conGasto.map((f) => (
-          <li key={f.userId} className="flex items-center gap-2.5 text-sm">
+          <li key={f.userId} className="flex items-center gap-2.5 text-caption">
             <span
               className="size-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: colorDeMiembro(indiceDe(f.userId)) }}
@@ -222,7 +222,7 @@ export function DonaMiembros({
             <span className="cifra shrink-0 font-medium text-texto">
               {moneda.format(f.egresos)}
             </span>
-            <span className="w-10 shrink-0 text-right text-xs text-texto-suave">
+            <span className="w-10 shrink-0 text-right text-micro text-texto-suave">
               {f.participacionEgresos.toFixed(0)} %
             </span>
           </li>
@@ -234,7 +234,7 @@ export function DonaMiembros({
 
 function Leyenda({ miembros }: { miembros: MiembroVista[] }) {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-texto-suave">
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-micro text-texto-suave">
       {miembros.map((m, i) => (
         <li key={m.id} className="flex items-center gap-1.5">
           <span

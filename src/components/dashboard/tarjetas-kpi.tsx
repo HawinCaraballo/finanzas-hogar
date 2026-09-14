@@ -50,17 +50,17 @@ export function TarjetasKpi({ resumen }: { resumen: ResumenMes }) {
       {tarjetas.map((t) => {
         const variacion = variacionPorcentual(t.valor, t.previo);
         return (
-          <div key={t.etiqueta} className="rounded-app border border-borde bg-superficie p-4">
+          <div key={t.etiqueta} className="rounded-app bg-superficie hairline p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-suave">
+              <p className="text-micro font-medium uppercase tracking-wide text-texto-suave">
                 {t.etiqueta}
               </p>
-              <span className={cn("grid size-8 place-items-center rounded-app", t.fondo, t.clase)}>
+              <span className={cn("grid size-8 place-items-center rounded-micro", t.fondo, t.clase)}>
                 <t.icono className="size-4" aria-hidden />
               </span>
             </div>
 
-            <p className={cn("cifra mt-2 text-2xl font-semibold", t.clase)}>
+            <p className={cn("cifra mt-2 text-heading font-semibold", t.clase)}>
               {moneda.format(t.valor)}
             </p>
 
@@ -87,7 +87,7 @@ function Variacion({
 }) {
   if (porcentaje === null) {
     return (
-      <p className="mt-1.5 flex items-center gap-1 text-xs text-texto-suave">
+      <p className="mt-1.5 flex items-center gap-1 text-micro text-texto-suave">
         <Minus className="size-3" aria-hidden />
         Sin datos del mes anterior
       </p>
@@ -100,7 +100,7 @@ function Variacion({
   const Icono = subio ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <p className="mt-1.5 flex items-center gap-1 text-xs text-texto-suave">
+    <p className="mt-1.5 flex items-center gap-1 text-micro text-texto-suave">
       <span
         className={cn(
           "inline-flex items-center gap-0.5 font-medium",

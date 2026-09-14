@@ -3,45 +3,151 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
-  Paleta: base neutra fría, verde azulado como color de marca, y dos colores
-  semánticos que se repiten en toda la app — verde = entra dinero,
-  rosa = sale dinero. Nunca se usan para otra cosa.
+  Sistema visual Family: lienzo de papel crema, cromo muy callado y el color
+  reservado para marcar significado. La seña de identidad es que las superficies
+  no se separan con sombra sino con una línea de un píxel POR DENTRO del borde
+  ("pressed into paper"), y que la única superficie oscura de todo el sistema es
+  la acción principal.
+
+  Dos capas de tokens:
+    1. La paleta cruda del manual, con sus nombres (cream-canvas, ink-black…).
+    2. Los tokens semánticos de la app (--marca, --ingreso, --egreso…), que
+       apuntan a la paleta. Los componentes solo usan los semánticos.
 */
+
+@theme {
+  /* Paleta del manual, tal cual. Disponible como bg-honey, text-ember, etc. */
+  --color-cream-canvas: #fbfaf9;
+  --color-stone-surface: #f2f0ed;
+  --color-sand: #f6f4ef;
+  --color-ink-black: #121212;
+  --color-heading-charcoal: #343433;
+  --color-body-brown: #474645;
+  --color-muted-gray: #7e7e7d;
+  --color-stone-border: #e5d5c3;
+  --color-link-blue: #0086fc;
+  --color-sky-blue: #64c6ff;
+  --color-alt-blue: #00b2ff;
+  --color-grass-green: #00c978;
+  --color-mint: #00ca48;
+  --color-ember-orange: #ff3e00;
+  --color-sun-yellow: #ffcd6c;
+  --color-gold: #d48f00;
+  --color-honey: #ffbb26;
+  --color-coral-pink: #ff58ae;
+  --color-plum-violet: #9f4fff;
+  --color-alert-red: #ff2b3a;
+
+  /*
+    Escala del manual. Los interlineados vienen dados en píxeles absolutos, no
+    en múltiplos, así que se escriben tal cual. Display y heading-lg son para
+    portada: dentro de la app el techo real es "heading".
+  */
+  --text-micro: 12px;
+  --text-micro--line-height: 19px;
+  --text-micro--letter-spacing: -0.01px;
+  --text-caption: 15px;
+  --text-caption--line-height: 22px;
+  --text-caption--letter-spacing: -0.14px;
+  --text-body: 17px;
+  --text-body--line-height: 26px;
+  --text-body--letter-spacing: -0.22px;
+  --text-subheading: 19px;
+  --text-subheading--line-height: 27px;
+  --text-subheading--letter-spacing: -0.3px;
+  --text-heading: 23px;
+  --text-heading--line-height: 25px;
+  --text-heading--letter-spacing: -0.44px;
+  --text-heading-lg: 44px;
+  --text-heading-lg--line-height: 53px;
+  --text-heading-lg--letter-spacing: -0.88px;
+  --text-display: 68px;
+  --text-display--line-height: 75px;
+  --text-display--letter-spacing: -2.1px;
+
+  /*
+    Radios del manual: 10 px es el valor por defecto de tarjetas y navegación,
+    32 px solo para botones (a las alturas de esta app el navegador lo recorta
+    a píldora) y 9999 px para insignias de estado y avatares.
+  */
+  --radius-app: 10px;
+  --radius-boton: 32px;
+  --radius-pastilla: 9999px;
+  --radius-micro: 6px;
+  --radius-icono: 40px;
+}
+
 :root {
-  --fondo: oklch(0.985 0.003 240);
-  --superficie: oklch(1 0 0);
-  --superficie-2: oklch(0.972 0.004 240);
-  --texto: oklch(0.21 0.02 250);
-  --texto-suave: oklch(0.52 0.02 250);
-  --borde: oklch(0.91 0.006 250);
-  --marca: oklch(0.55 0.11 185);
-  --marca-suave: oklch(0.95 0.03 185);
-  --marca-texto: oklch(1 0 0);
-  --ingreso: oklch(0.62 0.15 155);
-  --ingreso-suave: oklch(0.95 0.05 155);
-  --egreso: oklch(0.62 0.19 18);
-  --egreso-suave: oklch(0.96 0.03 18);
-  --alerta: oklch(0.75 0.15 75);
-  --anillo: oklch(0.55 0.11 185 / 0.45);
-  --radio: 0.75rem;
+  --fondo: var(--color-cream-canvas);
+  --superficie: #ffffff;
+  --superficie-2: var(--color-stone-surface);
+  --texto: var(--color-heading-charcoal);
+  --texto-suave: var(--color-body-brown);
+
+  /*
+    El manual distingue el tono de la línea interior (piedra, casi invisible y
+    por eso perfecto para tarjetas) del de los bordes dibujados. Un campo de
+    formulario con borde piedra no se encontraría, así que los campos usan el
+    tono más cálido y visible que el propio manual reserva para trazos.
+  */
+  --borde: var(--color-stone-surface);
+  --borde-campo: var(--color-stone-border);
+  --hairline: var(--color-stone-surface);
+
+  /* La acción principal es el único momento oscuro del sistema. */
+  --marca: var(--color-ink-black);
+  --marca-suave: var(--color-stone-surface);
+  --marca-texto: var(--color-cream-canvas);
+
+  /*
+    Casi ningún acento del manual llega a 4.5:1 sobre blanco: están pensados
+    como relleno de ilustración, no como texto. Los que aquí marcan cifras y
+    enlaces son sus versiones oscurecidas; los originales siguen disponibles
+    arriba para rellenos y manchas decorativas.
+
+    Reparto de los acentos cálidos, según las reglas del manual: el ámbar es
+    "the warm accent slot" y marca el dinero que sale; el rojo de alerta queda
+    solo para acciones destructivas; el azul de enlace, solo para enlaces.
+  */
+  --marca-fuerte: #0067c4;
+  --ingreso: #047346;
+  --ingreso-suave: #d9f2e5;
+  --egreso: #c53100;
+  --egreso-suave: #ffe6dc;
+  --peligro: #c81824;
+  --alerta: #8f5f00;
+  --alerta-suave: #ffeecc;
 }
 
 .dark {
-  --fondo: oklch(0.17 0.012 255);
-  --superficie: oklch(0.215 0.014 255);
-  --superficie-2: oklch(0.255 0.015 255);
-  --texto: oklch(0.96 0.004 250);
-  --texto-suave: oklch(0.7 0.018 250);
-  --borde: oklch(0.32 0.015 255);
-  --marca: oklch(0.72 0.11 185);
-  --marca-suave: oklch(0.3 0.05 185);
-  --marca-texto: oklch(0.17 0.012 255);
-  --ingreso: oklch(0.75 0.15 155);
-  --ingreso-suave: oklch(0.3 0.06 155);
-  --egreso: oklch(0.71 0.17 18);
-  --egreso-suave: oklch(0.31 0.07 18);
-  --alerta: oklch(0.8 0.14 75);
-  --anillo: oklch(0.72 0.11 185 / 0.5);
+  /*
+    El manual es solo tema claro, pero la app ya trae interruptor. En vez de
+    quitarlo, el modo oscuro se rederiva del mismo papel: el negro tinta pasa a
+    ser el lienzo, la crema pasa a ser la acción principal (la inversión
+    mantiene "un único momento de contraste") y los acentos suben de luminosidad
+    hasta volver a pasar AA.
+  */
+  --fondo: var(--color-ink-black);
+  --superficie: #1c1b1a;
+  --superficie-2: #262523;
+  --texto: var(--color-cream-canvas);
+  --texto-suave: #b3b0ac;
+  --borde: #302e2c;
+  --borde-campo: #3d3a37;
+  --hairline: #302e2c;
+
+  --marca: var(--color-cream-canvas);
+  --marca-suave: #262523;
+  --marca-texto: var(--color-ink-black);
+
+  --marca-fuerte: #64b5ff;
+  --ingreso: #4ddb9a;
+  --ingreso-suave: #16352a;
+  --egreso: #ff8a5c;
+  --egreso-suave: #3a1e12;
+  --peligro: #ff7b84;
+  --alerta: var(--color-honey);
+  --alerta-suave: #3a2e12;
 }
 
 @theme inline {
@@ -51,16 +157,20 @@
   --color-texto: var(--texto);
   --color-texto-suave: var(--texto-suave);
   --color-borde: var(--borde);
+  --color-borde-campo: var(--borde-campo);
   --color-marca: var(--marca);
+  --color-marca-fuerte: var(--marca-fuerte);
   --color-marca-suave: var(--marca-suave);
   --color-marca-texto: var(--marca-texto);
   --color-ingreso: var(--ingreso);
   --color-ingreso-suave: var(--ingreso-suave);
   --color-egreso: var(--egreso);
   --color-egreso-suave: var(--egreso-suave);
+  --color-peligro: var(--peligro);
   --color-alerta: var(--alerta);
-  --radius-app: var(--radio);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-alerta-suave: var(--alerta-suave);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-archivo), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -74,15 +184,26 @@
     background-color: var(--fondo);
     color: var(--texto);
     font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    letter-spacing: var(--text-body--letter-spacing);
     -webkit-font-smoothing: antialiased;
+  }
+  /* El interletraje se cierra a medida que el texto crece. */
+  h1 {
+    letter-spacing: var(--text-heading--letter-spacing);
+  }
+  h2,
+  h3 {
+    letter-spacing: var(--text-subheading--letter-spacing);
   }
   /* Los montos grandes se leen mejor con cifras de ancho fijo. */
   .cifra {
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
   }
   :focus-visible {
-    outline: 2px solid var(--marca);
+    outline: 2px solid var(--marca-fuerte);
     outline-offset: 2px;
   }
   /* Oculta las flechas de los inputs numéricos: los montos se escriben a mano. */
@@ -100,11 +221,32 @@
   }
   @media (min-width: 768px) {
     .pb-navegacion {
-      padding-bottom: 2rem;
+      padding-bottom: 2.5rem;
     }
   }
   .scrollbar-fina {
     scrollbar-width: thin;
+  }
+
+  /*
+    La técnica que define el sistema: la tarjeta se delimita con una línea de
+    1 px hacia dentro, no con sombra. Va como utilidad de CSS plano —y no como
+    token de sombra de Tailwind— porque Tailwind incrusta el color dentro de la
+    utilidad en vez de leer la variable, y así el tema oscuro no funcionaría.
+  */
+  .hairline {
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+
+  /*
+    Las capas que sí flotan (menús, diálogos) llevan la sombra más discreta que
+    permite el manual, siempre acompañada de su línea interior.
+  */
+  .flotante {
+    box-shadow:
+      inset 0 0 0 1px var(--hairline),
+      0 1px 6px 0 rgb(0 0 0 / 0.04),
+      0 0 24px 0 rgb(0 0 0 / 0.05);
   }
 }
 

@@ -23,10 +23,10 @@ export function ProximosPagos({ pagos }: { pagos: PagoProximo[] }) {
             </span>
 
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-texto">
+              <span className="block truncate text-caption font-medium text-texto">
                 {p.descripcion}
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-texto-suave">
+              <span className="flex items-center gap-1.5 text-micro text-texto-suave">
                 <CalendarClock className="size-3" aria-hidden />
                 <span className="first-letter:uppercase">{fechaLegible(p.fecha)}</span>
                 <span className="truncate">· {p.detalle}</span>
@@ -34,7 +34,7 @@ export function ProximosPagos({ pagos }: { pagos: PagoProximo[] }) {
             </span>
 
             <span className="shrink-0 text-right">
-              <span className="cifra block text-sm font-semibold text-texto">
+              <span className="cifra block text-caption font-semibold text-texto">
                 {moneda.format(p.monto)}
               </span>
               {vencido && (

@@ -46,7 +46,7 @@ export function MenuUsuario({
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         className={cn(
-          "grid size-9 shrink-0 place-items-center rounded-full bg-superficie-2 text-xs font-semibold text-texto transition-colors hover:bg-borde",
+          "grid size-9 shrink-0 place-items-center rounded-full bg-superficie-2 text-micro font-semibold text-texto transition-colors hover:bg-borde",
           className,
         )}
         aria-label="Tu cuenta"
@@ -58,11 +58,11 @@ export function MenuUsuario({
         <DropdownMenu.Content
           align="end"
           sideOffset={6}
-          className="z-50 min-w-56 rounded-app border border-borde bg-superficie p-1 shadow-lg"
+          className="z-50 min-w-56 rounded-app bg-superficie p-1 flotante"
         >
           <div className="px-2 py-2">
-            <p className="truncate text-sm font-medium text-texto">{nombre}</p>
-            <p className="truncate text-xs text-texto-suave">{email}</p>
+            <p className="truncate text-caption font-medium text-texto">{nombre}</p>
+            <p className="truncate text-micro text-texto-suave">{email}</p>
           </div>
 
           <DropdownMenu.Separator className="my-1 h-px bg-borde" />
@@ -73,7 +73,7 @@ export function MenuUsuario({
               e.preventDefault();
               alternarTema();
             }}
-            className="flex cursor-pointer items-center gap-2 rounded-[0.5rem] px-2 py-2 text-sm text-texto outline-none data-[highlighted]:bg-superficie-2"
+            className="flex cursor-pointer items-center gap-2 rounded-micro px-2 py-2 text-caption text-texto outline-none data-[highlighted]:bg-superficie-2"
           >
             {oscuro ? <Sun className="size-4" aria-hidden /> : <Moon className="size-4" aria-hidden />}
             {oscuro ? "Tema claro" : "Tema oscuro"}
@@ -92,7 +92,7 @@ export function MenuUsuario({
             <form action={salir}>
               <button
                 type="submit"
-                className="flex w-full cursor-pointer items-center gap-2 rounded-[0.5rem] px-2 py-2 text-sm text-egreso outline-none data-[highlighted]:bg-superficie-2"
+                className="flex w-full cursor-pointer items-center gap-2 rounded-micro px-2 py-2 text-caption text-peligro outline-none data-[highlighted]:bg-superficie-2"
               >
                 <LogOut className="size-4" aria-hidden />
                 Cerrar sesión

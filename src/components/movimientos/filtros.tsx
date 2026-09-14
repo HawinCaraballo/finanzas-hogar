@@ -80,7 +80,7 @@ export function FiltrosMovimientos({
         <div
           role="radiogroup"
           aria-label="Tipo"
-          className="flex gap-1 rounded-app bg-superficie-2 p-1"
+          className="flex gap-1 rounded-pastilla bg-superficie-2 p-1"
         >
           {(
             [
@@ -96,7 +96,7 @@ export function FiltrosMovimientos({
               aria-checked={tipo === op.valor}
               onClick={() => aplicar({ tipo: op.valor === "TODOS" ? "" : op.valor, categoria: "" })}
               className={cn(
-                "h-8 rounded-[0.4rem] px-3 text-xs font-medium transition-colors",
+                "h-8 rounded-pastilla px-3 text-micro font-medium transition-colors",
                 tipo === op.valor
                   ? "bg-superficie text-texto shadow-sm"
                   : "text-texto-suave hover:text-texto",
@@ -111,7 +111,7 @@ export function FiltrosMovimientos({
           value={categoryId}
           onChange={(e) => aplicar({ categoria: e.target.value })}
           aria-label="Categoría"
-          className="h-9 w-auto min-w-44 text-sm"
+          className="h-9 w-auto min-w-44 text-caption"
         >
           <option value="">Todas las categorías</option>
           {opciones.map((c) => (
@@ -126,7 +126,7 @@ export function FiltrosMovimientos({
             value={quien}
             onChange={(e) => aplicar({ quien: e.target.value })}
             aria-label="Quién pagó o recibió"
-            className="h-9 w-auto min-w-40 text-sm"
+            className="h-9 w-auto min-w-40 text-caption"
           >
             <option value="">Cualquier persona</option>
             {miembros.map((m) => (
@@ -141,7 +141,7 @@ export function FiltrosMovimientos({
           <button
             type="button"
             onClick={() => aplicar({ tipo: "", categoria: "", quien: "", q: "" })}
-            className="flex h-9 items-center gap-1 rounded-app px-2.5 text-xs font-medium text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
+            className="flex h-9 items-center gap-1 rounded-pastilla px-2.5 text-micro font-medium text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
           >
             <X className="size-3.5" aria-hidden />
             Limpiar

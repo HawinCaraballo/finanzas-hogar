@@ -57,12 +57,12 @@ export function ListaMovimientos({
       {grupos.map((grupo) => (
         <section key={grupo.fecha}>
           <header className="flex items-baseline justify-between gap-3 bg-superficie-2/60 px-4 py-1.5">
-            <h3 className="text-xs font-semibold first-letter:uppercase text-texto-suave">
+            <h3 className="text-micro font-semibold first-letter:uppercase text-texto-suave">
               {fechaLegible(grupo.fecha)}
             </h3>
             <span
               className={cn(
-                "cifra text-xs font-medium",
+                "cifra text-micro font-medium",
                 grupo.neto >= 0 ? "text-ingreso" : "text-egreso",
               )}
             >
@@ -111,14 +111,14 @@ function Fila({
 
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
-            <span className="truncate text-sm font-medium text-texto">
+            <span className="truncate text-caption font-medium text-texto">
               {movimiento.descripcion}
             </span>
             {movimiento.esRecurrente && (
               <Repeat className="size-3 shrink-0 text-texto-suave" aria-label="Movimiento recurrente" />
             )}
           </span>
-          <span className="block truncate text-xs text-texto-suave">
+          <span className="block truncate text-micro text-texto-suave">
             {movimiento.categoria.nombre} ·{" "}
             {esIngreso ? "recibió" : "pagó"} {movimiento.responsable.nombre}
             {/*
@@ -132,7 +132,7 @@ function Fila({
 
         <span
           className={cn(
-            "cifra shrink-0 text-sm font-semibold",
+            "cifra shrink-0 text-caption font-semibold",
             esIngreso ? "text-ingreso" : "text-egreso",
           )}
         >

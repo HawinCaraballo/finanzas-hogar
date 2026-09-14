@@ -64,7 +64,7 @@ export function GestorMiembros({
     <div className="space-y-5">
       <section>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-texto">
+          <h2 className="text-caption font-semibold text-texto">
             Miembros ({miembros.length})
           </h2>
           {esAdmin && (
@@ -79,16 +79,16 @@ export function GestorMiembros({
           <ul className="divide-y divide-borde">
             {miembros.map((m) => (
               <li key={m.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-superficie-2 text-xs font-semibold text-texto">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-superficie-2 text-micro font-semibold text-texto">
                   {m.user.nombre.slice(0, 2).toUpperCase()}
                 </span>
 
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-2 truncate text-sm font-medium text-texto">
+                  <p className="flex items-center gap-2 truncate text-caption font-medium text-texto">
                     {m.user.nombre}
                     {m.user.id === usuarioActualId && <Insignia>Tú</Insignia>}
                   </p>
-                  <p className="truncate text-xs text-texto-suave">{m.user.email}</p>
+                  <p className="truncate text-micro text-texto-suave">{m.user.email}</p>
                 </div>
 
                 {esAdmin ? (
@@ -102,7 +102,7 @@ export function GestorMiembros({
                         )
                       }
                       aria-label={`Rol de ${m.user.nombre}`}
-                      className="h-9 w-auto text-sm"
+                      className="h-9 w-auto text-caption"
                     >
                       <option value="ADMIN">Administrador</option>
                       <option value="MIEMBRO">Miembro</option>
@@ -116,7 +116,7 @@ export function GestorMiembros({
                         }
                         aria-label={`Sacar a ${m.user.nombre}`}
                       >
-                        <Trash2 className="text-egreso" aria-hidden />
+                        <Trash2 className="text-peligro" aria-hidden />
                       </Boton>
                     )}
                   </div>
@@ -133,7 +133,7 @@ export function GestorMiembros({
 
       {esAdmin && invitaciones.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold text-texto">Invitaciones pendientes</h2>
+          <h2 className="mb-2 text-caption font-semibold text-texto">Invitaciones pendientes</h2>
           <Tarjeta className="overflow-hidden">
             <ul className="divide-y divide-borde">
               {invitaciones.map((i) => (
@@ -142,8 +142,8 @@ export function GestorMiembros({
                     <Link2 className="size-4" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-texto">{i.email}</p>
-                    <p className="text-xs text-texto-suave">
+                    <p className="truncate text-caption font-medium text-texto">{i.email}</p>
+                    <p className="text-micro text-texto-suave">
                       {i.role === "ADMIN" ? "Administrador" : "Miembro"} · vence{" "}
                       <span className="first-letter:uppercase">{fechaLegible(i.expiresAt)}</span>
                     </p>
@@ -156,7 +156,7 @@ export function GestorMiembros({
                       onClick={() => correr(revocarInvitacion(i.id), "Invitación revocada.")}
                       aria-label={`Revocar invitación de ${i.email}`}
                     >
-                      <Trash2 className="text-egreso" aria-hidden />
+                      <Trash2 className="text-peligro" aria-hidden />
                     </Boton>
                   </div>
                 </li>
@@ -180,11 +180,11 @@ export function GestorMiembros({
           >
             {enlaceNuevo ? (
               <div className="space-y-4">
-                <p className="text-sm text-texto">
+                <p className="text-caption text-texto">
                   Listo. Comparte este enlace con la persona; vence en 7 días.
                 </p>
                 <div className="flex items-center gap-2 rounded-app border border-borde bg-superficie-2 p-3">
-                  <code className="min-w-0 flex-1 truncate text-xs text-texto">{enlaceNuevo}</code>
+                  <code className="min-w-0 flex-1 truncate text-micro text-texto">{enlaceNuevo}</code>
                   <BotonCopiar enlace={enlaceNuevo} />
                 </div>
                 <Boton

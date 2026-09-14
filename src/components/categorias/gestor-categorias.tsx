@@ -64,7 +64,7 @@ export function GestorCategorias({
           <button
             type="button"
             onClick={() => setVerArchivadas((v) => !v)}
-            className="text-xs font-medium text-marca hover:underline"
+            className="text-micro font-medium text-marca-fuerte hover:underline"
           >
             {verArchivadas ? "Ocultar" : "Ver"} archivadas ({archivadas})
           </button>
@@ -139,7 +139,7 @@ function Grupo({
 
   return (
     <section>
-      <h2 className="mb-2 text-sm font-semibold text-texto">{titulo}</h2>
+      <h2 className="mb-2 text-caption font-semibold text-texto">{titulo}</h2>
       <Tarjeta className="overflow-hidden">
         <ul className="divide-y divide-borde">
           {categorias.map((c) => {
@@ -158,7 +158,7 @@ function Grupo({
                   <span className="flex items-center gap-2">
                     <span
                       className={cn(
-                        "truncate text-sm font-medium",
+                        "truncate text-caption font-medium",
                         c.archivada ? "text-texto-suave line-through" : "text-texto",
                       )}
                     >
@@ -166,7 +166,7 @@ function Grupo({
                     </span>
                     {c.archivada && <Insignia>Archivada</Insignia>}
                   </span>
-                  <span className="block text-xs text-texto-suave">
+                  <span className="block text-micro text-texto-suave">
                     {usos === 0
                       ? "Sin movimientos"
                       : `${usos} ${usos === 1 ? "movimiento" : "movimientos"}`}
@@ -197,7 +197,7 @@ function Grupo({
                       onClick={() => onBorrar(c)}
                       aria-label={`Eliminar ${c.nombre}`}
                     >
-                      <Trash2 className="text-egreso" aria-hidden />
+                      <Trash2 className="text-peligro" aria-hidden />
                     </Boton>
                   )}
                 </div>
@@ -275,7 +275,7 @@ function FormularioCategoria({
       </Campo>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-medium text-texto">Color</legend>
+        <legend className="mb-2 text-caption font-medium text-texto">Color</legend>
         <div className="flex flex-wrap gap-2">
           {COLORES.map((c) => (
             <button
@@ -295,7 +295,7 @@ function FormularioCategoria({
       </fieldset>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-medium text-texto">Ícono</legend>
+        <legend className="mb-2 text-caption font-medium text-texto">Ícono</legend>
         <div className="scrollbar-fina grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-app border border-borde p-2 sm:grid-cols-8">
           {NOMBRES_ICONOS.map((nombre) => {
             const Icono = iconoPorNombre(nombre);
@@ -307,9 +307,9 @@ function FormularioCategoria({
                 aria-label={nombre}
                 aria-pressed={icono === nombre}
                 className={cn(
-                  "grid size-9 place-items-center rounded-app transition-colors",
+                  "grid size-9 place-items-center rounded-micro transition-colors",
                   icono === nombre
-                    ? "bg-marca-suave text-marca"
+                    ? "bg-marca-suave text-marca-fuerte"
                     : "text-texto-suave hover:bg-superficie-2",
                 )}
               >

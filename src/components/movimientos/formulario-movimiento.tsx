@@ -138,7 +138,7 @@ export function FormularioMovimiento({
       <div
         role="radiogroup"
         aria-label="Tipo de movimiento"
-        className="grid grid-cols-2 gap-1 rounded-app bg-superficie-2 p-1"
+        className="grid grid-cols-2 gap-1 rounded-pastilla bg-superficie-2 p-1"
       >
         {(
           [
@@ -153,7 +153,7 @@ export function FormularioMovimiento({
             aria-checked={tipo === op.valor}
             onClick={() => cambiarTipo(op.valor)}
             className={cn(
-              "h-11 rounded-[0.5rem] text-sm font-semibold transition-colors",
+              "h-11 rounded-pastilla text-caption font-semibold transition-colors",
               tipo === op.valor ? op.activo : "text-texto-suave hover:text-texto",
             )}
           >
@@ -180,7 +180,7 @@ export function FormularioMovimiento({
       </Campo>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-medium text-texto">Categoría</legend>
+        <legend className="mb-2 text-caption font-medium text-texto">Categoría</legend>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {opciones.map((c) => {
             const Icono = iconoPorNombre(c.icon);
@@ -200,7 +200,7 @@ export function FormularioMovimiento({
                 style={elegida ? { backgroundColor: `${c.color}1f` } : undefined}
               >
                 <Icono className="size-5" style={{ color: c.color }} aria-hidden />
-                <span className="line-clamp-2 text-[11px] font-medium leading-tight text-texto">
+                <span className="line-clamp-2 text-micro font-medium leading-tight text-texto">
                   {c.nombre}
                 </span>
               </button>
@@ -209,12 +209,12 @@ export function FormularioMovimiento({
         </div>
         <input type="hidden" {...register("categoryId")} />
         {errors.categoryId && (
-          <p role="alert" className="mt-2 text-xs font-medium text-egreso">
+          <p role="alert" className="mt-2 text-micro font-medium text-peligro">
             {errors.categoryId.message}
           </p>
         )}
         {opciones.length === 0 && (
-          <p className="mt-2 text-xs text-texto-suave">
+          <p className="mt-2 text-micro text-texto-suave">
             No hay categorías de este tipo. Créalas en la sección Categorías.
           </p>
         )}
@@ -265,7 +265,7 @@ export function FormularioMovimiento({
           type="button"
           onClick={() => setMasOpciones((v) => !v)}
           aria-expanded={masOpciones}
-          className="flex items-center gap-1 text-sm font-medium text-texto-suave transition-colors hover:text-texto"
+          className="flex items-center gap-1 text-caption font-medium text-texto-suave transition-colors hover:text-texto"
         >
           <ChevronDown
             className={cn("size-4 transition-transform", masOpciones && "rotate-180")}
@@ -307,7 +307,7 @@ export function FormularioMovimiento({
       <div className="flex gap-2 pt-1">
         {editando && (
           <Boton type="button" variante="contorno" tamano="lg" onClick={borrar} aria-label="Eliminar movimiento">
-            <Trash2 className="text-egreso" aria-hidden />
+            <Trash2 className="text-peligro" aria-hidden />
           </Boton>
         )}
         <Boton

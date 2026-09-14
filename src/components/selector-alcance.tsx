@@ -43,7 +43,7 @@ export function SelectorAlcance({
         value={claveAlcance(alcance)}
         onChange={(e) => elegir(e.target.value)}
         aria-label="De quién son las cifras"
-        className="h-9 w-auto min-w-40 text-sm"
+        className="h-9 w-auto min-w-40 text-caption"
       >
         <option value={CLAVE_HOGAR}>Todo el hogar</option>
         {miembros.map((m) => (

@@ -19,11 +19,11 @@ export default async function PaginaPresupuestos({
   const presupuestos = await presupuestosEditables(periodo);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">Presupuestos</h1>
-          <p className="text-sm text-texto-suave">
+          <h1 className="text-heading font-medium text-texto">Presupuestos</h1>
+          <p className="text-caption text-texto-suave">
             Topes de <span className="capitalize">{nombrePeriodo(periodo)}</span>
           </p>
         </div>

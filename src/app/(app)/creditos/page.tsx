@@ -9,10 +9,10 @@ export default async function PaginaCreditos() {
   const [creditos, categorias] = await Promise.all([listarCreditos(), categoriasDelHogar()]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-texto">Créditos</h1>
-        <p className="text-sm text-texto-suave">
+        <h1 className="text-heading font-medium text-texto">Créditos</h1>
+        <p className="text-caption text-texto-suave">
           Cuánto llevas pagado y cuánto falta. Cada cuota se registra como un gasto normal.
         </p>
       </header>

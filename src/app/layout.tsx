@@ -1,11 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Archivo, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
+/** Inter sostiene toda la capa de utilidad: navegación, cuerpo y etiquetas. */
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+/*
+  El manual pide su tipografía propia "Family" para los titulares de portada y
+  prohíbe usar Inter a ese tamaño. Esa fuente no es pública, así que se usa
+  Archivo —grotesca ligeramente condensada, en la línea de los sustitutos que
+  el propio manual sugiere— y solo donde de verdad hay un titular de portada.
+*/
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-archivo",
   display: "swap",
 });
 
@@ -23,14 +37,18 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f1720" },
+    { media: "(prefers-color-scheme: light)", color: "#fbfaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#121212" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="es"
+      className={`${inter.variable} ${archivo.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/*
           Aplica el tema antes del primer pintado para que no haya un

@@ -25,13 +25,13 @@ export function ResumenFiltrado({
   ];
 
   return (
-    <dl className="grid grid-cols-3 divide-x divide-borde rounded-app border border-borde bg-superficie">
+    <dl className="grid grid-cols-3 divide-x divide-borde rounded-app bg-superficie hairline">
       {items.map((i) => (
         <div key={i.etiqueta} className="px-3 py-2.5 text-center sm:px-4">
-          <dt className="text-[11px] font-medium uppercase tracking-wide text-texto-suave">
+          <dt className="text-micro font-medium uppercase tracking-wide text-texto-suave">
             {i.etiqueta}
           </dt>
-          <dd className={cn("cifra mt-0.5 truncate text-sm font-semibold sm:text-base", i.clase)}>
+          <dd className={cn("cifra mt-0.5 truncate text-caption font-semibold sm:text-body", i.clase)}>
             {moneda.format(i.valor)}
           </dd>
         </div>

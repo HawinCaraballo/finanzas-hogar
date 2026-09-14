@@ -57,7 +57,7 @@ export function NavegacionMovil() {
           <button
             type="button"
             onClick={() => registrar()}
-            className="-mt-5 grid size-14 place-items-center rounded-full bg-marca text-marca-texto shadow-lg shadow-marca/30 transition-transform active:scale-95"
+            className="-mt-5 grid size-14 place-items-center rounded-full bg-marca text-marca-texto transition-transform active:scale-95"
             aria-label="Registrar movimiento"
           >
             <Plus className="size-6" aria-hidden />
@@ -71,8 +71,8 @@ export function NavegacionMovil() {
         <DropdownMenu.Root>
           <DropdownMenu.Trigger
             className={cn(
-              "flex h-14 w-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
-              restoActivo ? "text-marca" : "text-texto-suave",
+              "flex h-14 w-full flex-col items-center justify-center gap-1 text-micro font-medium transition-colors",
+              restoActivo ? "text-marca-fuerte" : "text-texto-suave",
             )}
           >
             <MoreHorizontal className="size-5" aria-hidden />
@@ -83,15 +83,15 @@ export function NavegacionMovil() {
               side="top"
               align="end"
               sideOffset={10}
-              className="z-50 mr-2 min-w-48 rounded-app border border-borde bg-superficie p-1 shadow-lg"
+              className="z-50 mr-2 min-w-48 rounded-app bg-superficie p-1 flotante"
             >
               {resto.map((item) => (
                 <DropdownMenu.Item key={item.href} asChild>
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-[0.5rem] px-3 py-2.5 text-sm outline-none data-[highlighted]:bg-superficie-2",
-                      esRutaActiva(ruta, item.href) ? "text-marca" : "text-texto",
+                      "flex cursor-pointer items-center gap-3 rounded-micro px-3 py-2.5 text-caption outline-none data-[highlighted]:bg-superficie-2",
+                      esRutaActiva(ruta, item.href) ? "text-marca-fuerte" : "text-texto",
                     )}
                   >
                     <item.icono className="size-4" aria-hidden />
@@ -119,8 +119,8 @@ function EnlaceMovil({
       href={item.href}
       aria-current={activo ? "page" : undefined}
       className={cn(
-        "flex h-14 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
-        activo ? "text-marca" : "text-texto-suave",
+        "flex h-14 flex-col items-center justify-center gap-1 text-micro font-medium transition-colors",
+        activo ? "text-marca-fuerte" : "text-texto-suave",
       )}
     >
       <item.icono className="size-5" aria-hidden />

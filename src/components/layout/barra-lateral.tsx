@@ -27,13 +27,13 @@ export function BarraLateral({
   const { registrar } = useMovimiento();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-borde bg-superficie md:flex">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-borde bg-superficie md:flex">
       <div className="border-b border-borde p-3">
         <SelectorHogar hogares={hogares} activo={hogar} className="w-full" />
       </div>
 
       <div className="p-3">
-        <Boton onClick={() => registrar()} className="w-full">
+        <Boton onClick={() => registrar()} className="w-full whitespace-nowrap px-4">
           <Plus aria-hidden />
           Registrar movimiento
         </Boton>
@@ -48,9 +48,9 @@ export function BarraLateral({
               href={item.href}
               aria-current={activo ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-app px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-app px-3 py-2.5 text-caption font-medium transition-colors",
                 activo
-                  ? "bg-marca-suave text-marca"
+                  ? "bg-marca-suave text-marca-fuerte"
                   : "text-texto-suave hover:bg-superficie-2 hover:text-texto",
               )}
             >
@@ -64,8 +64,8 @@ export function BarraLateral({
       <div className="flex items-center gap-2 border-t border-borde p-3">
         <MenuUsuario nombre={usuario.nombre} email={usuario.email} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-texto">{usuario.nombre}</p>
-          <p className="truncate text-xs text-texto-suave">
+          <p className="truncate text-caption font-medium text-texto">{usuario.nombre}</p>
+          <p className="truncate text-micro text-texto-suave">
             {esAdmin ? "Administrador" : "Miembro"}
           </p>
         </div>

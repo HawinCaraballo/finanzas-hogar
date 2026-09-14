@@ -64,11 +64,11 @@ export default async function PaginaMovimientos({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">Movimientos</h1>
-          <p className="text-sm text-texto-suave">
+          <h1 className="text-heading font-medium text-texto">Movimientos</h1>
+          <p className="text-caption text-texto-suave">
             {resultado.total === 0
               ? "Ningún movimiento con estos filtros"
               : `${resultado.total} ${resultado.total === 1 ? "movimiento" : "movimientos"}`}
@@ -117,7 +117,7 @@ export default async function PaginaMovimientos({
           <Boton asChild variante="secundario" disabled={pagina === 1}>
             <Link href={`/movimientos?${params({ pagina: String(pagina - 1) })}`}>Anteriores</Link>
           </Boton>
-          <span className="text-xs text-texto-suave">Página {pagina}</span>
+          <span className="text-micro text-texto-suave">Página {pagina}</span>
           <Boton asChild variante="secundario" disabled={!resultado.hayMas}>
             <Link href={`/movimientos?${params({ pagina: String(pagina + 1) })}`}>Siguientes</Link>
           </Boton>

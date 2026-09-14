@@ -32,7 +32,7 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-      <div className="relative mx-auto size-44 shrink-0">
+      <div className="relative mx-auto size-44 shrink-0 sm:size-36">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -58,7 +58,7 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
                 if (!active || !payload?.length) return null;
                 const p = payload[0].payload as GastoPorCategoria;
                 return (
-                  <div className="rounded-app border border-borde bg-superficie px-3 py-2 text-xs shadow-lg">
+                  <div className="rounded-app bg-superficie px-3 py-2 text-micro flotante">
                     <p className="font-semibold text-texto">{p.nombre}</p>
                     <p className="cifra text-texto-suave">
                       {moneda.format(p.total)} · {p.porcentaje.toFixed(0)} %
@@ -72,8 +72,8 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
 
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
           <div>
-            <p className="text-[11px] uppercase tracking-wide text-texto-suave">Total</p>
-            <p className="cifra text-sm font-semibold text-texto">{moneda.formatCompacto(total)}</p>
+            <p className="text-micro uppercase tracking-wide text-texto-suave">Total</p>
+            <p className="cifra text-caption font-semibold text-texto">{moneda.formatCompacto(total)}</p>
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
         {porciones.map((p) => {
           const Icono = iconoPorNombre(p.icon);
           return (
-            <li key={p.id} className="flex items-center gap-2.5 text-sm">
+            <li key={p.id} className="flex items-center gap-2 text-caption">
               <span
                 className="grid size-7 shrink-0 place-items-center rounded-full"
                 style={{ backgroundColor: `${p.color}1f`, color: p.color }}
@@ -93,7 +93,7 @@ export function GastosCategoria({ datos }: { datos: GastoPorCategoria[] }) {
               <span className="cifra shrink-0 font-medium text-texto">
                 {moneda.format(p.total)}
               </span>
-              <span className="w-10 shrink-0 text-right text-xs text-texto-suave">
+              <span className="w-9 shrink-0 text-right text-micro text-texto-suave">
                 {p.porcentaje.toFixed(0)} %
               </span>
             </li>

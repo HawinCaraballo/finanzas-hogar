@@ -136,7 +136,7 @@ function Fila({
         <div className="flex flex-wrap items-center gap-1.5">
           <span
             className={cn(
-              "truncate text-sm font-medium",
+              "truncate text-caption font-medium",
               r.activa ? "text-texto" : "text-texto-suave",
             )}
           >
@@ -152,7 +152,7 @@ function Fila({
             <Insignia>Recordatorio</Insignia>
           )}
         </div>
-        <p className="flex items-center gap-1.5 text-xs text-texto-suave">
+        <p className="flex items-center gap-1.5 text-micro text-texto-suave">
           <CalendarClock className="size-3" aria-hidden />
           {ETIQUETA_FRECUENCIA[r.frequency]} · próxima{" "}
           <span className="first-letter:uppercase">{fechaLegible(r.proximaFecha)}</span>
@@ -161,7 +161,7 @@ function Fila({
 
       <span
         className={cn(
-          "cifra shrink-0 text-sm font-semibold",
+          "cifra shrink-0 text-caption font-semibold",
           esIngreso ? "text-ingreso" : "text-egreso",
         )}
       >
@@ -187,7 +187,7 @@ function Fila({
           {r.activa ? <Pause aria-hidden /> : <Play aria-hidden />}
         </Boton>
         <Boton variante="fantasma" tamano="iconoSm" onClick={onBorrar} aria-label="Eliminar regla">
-          <Trash2 className="text-egreso" aria-hidden />
+          <Trash2 className="text-peligro" aria-hidden />
         </Boton>
       </div>
     </li>
@@ -342,8 +342,8 @@ function FormularioRecurrente({
           {...register("autoPost")}
         />
         <span>
-          <span className="block text-sm font-medium text-texto">Registrarlo automáticamente</span>
-          <span className="block text-xs text-texto-suave">
+          <span className="block text-caption font-medium text-texto">Registrarlo automáticamente</span>
+          <span className="block text-micro text-texto-suave">
             Si lo desactivas, la regla solo te lo recuerda y tú confirmas el registro.
           </span>
         </span>

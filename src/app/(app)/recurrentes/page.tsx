@@ -12,10 +12,10 @@ export default async function PaginaRecurrentes() {
   const [reglas, categorias] = await Promise.all([listarRecurrentes(), categoriasDelHogar()]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-texto">Movimientos recurrentes</h1>
-        <p className="text-sm text-texto-suave">
+        <h1 className="text-heading font-medium text-texto">Movimientos recurrentes</h1>
+        <p className="text-caption text-texto-suave">
           Lo que se repite cada mes se registra solo: arriendo, servicios, cuotas.
         </p>
       </header>

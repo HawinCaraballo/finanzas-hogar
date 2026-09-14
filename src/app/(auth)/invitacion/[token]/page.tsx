@@ -30,9 +30,9 @@ export default async function PaginaInvitacion({
 
   if (problema || !invitacion) {
     return (
-      <div className="rounded-app border border-borde bg-superficie p-6 text-center">
-        <h2 className="text-base font-semibold text-texto">No pudimos abrir la invitación</h2>
-        <p className="mt-2 text-sm text-texto-suave">{problema}</p>
+      <div className="rounded-app bg-superficie hairline p-6 text-center">
+        <h2 className="text-body font-semibold text-texto">No pudimos abrir la invitación</h2>
+        <p className="mt-2 text-caption text-texto-suave">{problema}</p>
         <Boton asChild variante="secundario" className="mt-5 w-full">
           <Link href="/dashboard">Ir a la aplicación</Link>
         </Boton>
@@ -47,11 +47,11 @@ export default async function PaginaInvitacion({
   }
 
   return (
-    <div className="rounded-app border border-borde bg-superficie p-6 text-center">
-      <h2 className="text-base font-semibold text-texto">
+    <div className="rounded-app bg-superficie hairline p-6 text-center">
+      <h2 className="text-body font-semibold text-texto">
         Te invitaron a {invitacion.household.nombre}
       </h2>
-      <p className="mt-2 text-sm text-texto-suave">
+      <p className="mt-2 text-caption text-texto-suave">
         Al aceptar podrás ver y registrar los movimientos de ese hogar como{" "}
         {invitacion.role === "ADMIN" ? "administrador" : "miembro"}.
       </p>

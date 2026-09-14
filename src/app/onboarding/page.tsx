@@ -17,25 +17,25 @@ export default async function PaginaOnboarding() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center bg-fondo px-4 py-10">
       <div className="w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <span className="grid size-12 place-items-center rounded-2xl bg-marca text-marca-texto">
+        <div className="mb-10 flex flex-col items-center gap-4 text-center">
+          <span className="grid size-12 place-items-center rounded-icono bg-marca text-marca-texto">
             <Wallet className="size-6" aria-hidden />
           </span>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-texto">
+            <h1 className="font-display text-heading font-medium text-texto sm:text-heading-lg">
               Hola, {user.nombre.split(" ")[0]}
             </h1>
-            <p className="mt-1 text-sm text-texto-suave">
+            <p className="mt-3 text-caption text-texto-suave">
               Crea el hogar cuyas finanzas vas a llevar. Después puedes invitar a quien viva contigo.
             </p>
           </div>
         </div>
 
-        <div className="rounded-app border border-borde bg-superficie p-6">
+        <div className="rounded-app bg-superficie hairline p-6">
           <FormularioHogar modo="crear" />
         </div>
 
-        <p className="mt-5 text-center text-xs text-texto-suave">
+        <p className="mt-5 text-center text-micro text-texto-suave">
           ¿Te invitaron a un hogar? Abre el enlace que te compartieron y quedarás dentro.
         </p>
       </div>

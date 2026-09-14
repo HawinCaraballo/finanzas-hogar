@@ -31,7 +31,7 @@ export function AceptarInvitacion({ token }: { token: string }) {
         Unirme al hogar
       </Boton>
       {error && (
-        <p role="alert" className="text-xs font-medium text-egreso">
+        <p role="alert" className="text-micro font-medium text-peligro">
           {error}
         </p>
       )}

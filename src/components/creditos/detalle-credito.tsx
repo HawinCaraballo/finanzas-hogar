@@ -56,7 +56,7 @@ export function AccionesCredito({ credito }: { credito: CreditoConResumen }) {
           {credito.activo ? "Marcar como pagado" : "Reabrir"}
         </Boton>
         <Boton variante="contorno" onClick={borrar} aria-label="Eliminar crédito">
-          <Trash2 className="text-egreso" aria-hidden />
+          <Trash2 className="text-peligro" aria-hidden />
         </Boton>
       </div>
 

@@ -60,13 +60,13 @@ export default async function PaginaDashboard({
   const sinDatos = resumen.cantidadMovimientos === 0 && serie.every((p) => p.ingresos + p.egresos === 0);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-texto">
+          <h1 className="text-heading font-medium text-texto">
             {soloUnaPersona ? `Cuenta de ${dequien}` : ctx.hogar.nombre}
           </h1>
-          <p className="text-sm text-texto-suave">
+          <p className="text-caption text-texto-suave">
             {soloUnaPersona ? `${ctx.hogar.nombre} · ` : "Resumen de "}
             <span className="capitalize">{nombrePeriodo(periodo)}</span>
           </p>
@@ -209,7 +209,7 @@ export default async function PaginaDashboard({
 
 function Leyenda() {
   return (
-    <div className="flex shrink-0 items-center gap-3 text-xs text-texto-suave">
+    <div className="flex shrink-0 items-center gap-3 text-micro text-texto-suave">
       <span className="flex items-center gap-1.5">
         <span className="size-2.5 rounded-full bg-ingreso" aria-hidden />
         Ingresos
@@ -226,7 +226,7 @@ function EnlaceSeccion({ href, etiqueta = "Ver" }: { href: string; etiqueta?: st
   return (
     <Link
       href={href}
-      className="flex shrink-0 items-center gap-1 text-xs font-medium text-marca transition-opacity hover:opacity-80"
+      className="flex shrink-0 items-center gap-1 text-micro font-medium text-marca-fuerte transition-opacity hover:opacity-80"
     >
       {etiqueta}
       <ArrowRight className="size-3.5" aria-hidden />

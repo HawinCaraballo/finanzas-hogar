@@ -8,18 +8,18 @@ export const metadata: Metadata = { title: "Nuevo hogar" };
 
 export default function PaginaNuevoHogar() {
   return (
-    <div className="mx-auto max-w-md space-y-5">
+    <div className="mx-auto max-w-md space-y-8">
       <Link
         href="/hogar"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-texto-suave transition-colors hover:text-texto"
+        className="inline-flex items-center gap-1.5 text-caption font-medium text-texto-suave transition-colors hover:text-texto"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Volver
       </Link>
 
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-texto">Crear otro hogar</h1>
-        <p className="text-sm text-texto-suave">
+        <h1 className="text-heading font-medium text-texto">Crear otro hogar</h1>
+        <p className="text-caption text-texto-suave">
           Útil si administras más de una casa. Cada hogar tiene sus propias categorías,
           movimientos y miembros.
         </p>

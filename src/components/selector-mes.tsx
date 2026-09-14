@@ -38,14 +38,14 @@ export function SelectorMes({ clave, className }: { clave: string; className?: s
         type="button"
         onClick={() => ir(mesAnterior(periodo))}
         aria-label="Mes anterior"
-        className="grid size-9 place-items-center rounded-app text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
+        className="grid size-9 place-items-center rounded-pastilla text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
       >
         <ChevronLeft className="size-5" aria-hidden />
       </button>
 
       <p
         aria-live="polite"
-        className="min-w-[10.5rem] text-center text-sm font-semibold capitalize text-texto"
+        className="min-w-[10.5rem] text-center text-caption font-semibold capitalize text-texto"
       >
         {nombrePeriodo(periodo)}
       </p>
@@ -54,7 +54,7 @@ export function SelectorMes({ clave, className }: { clave: string; className?: s
         type="button"
         onClick={() => ir(mesSiguiente(periodo))}
         aria-label="Mes siguiente"
-        className="grid size-9 place-items-center rounded-app text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
+        className="grid size-9 place-items-center rounded-pastilla text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
       >
         <ChevronRight className="size-5" aria-hidden />
       </button>
@@ -63,7 +63,7 @@ export function SelectorMes({ clave, className }: { clave: string; className?: s
         <button
           type="button"
           onClick={() => ir(hoy)}
-          className="ml-1 rounded-app px-2 py-1.5 text-xs font-medium text-marca transition-colors hover:bg-marca-suave"
+          className="ml-1 rounded-app px-2 py-1.5 text-micro font-medium text-marca-fuerte transition-colors hover:bg-marca-suave"
         >
           Hoy
         </button>

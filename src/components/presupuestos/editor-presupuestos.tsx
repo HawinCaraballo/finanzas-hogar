@@ -55,14 +55,14 @@ export function EditorPresupuestos({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-app border border-borde bg-superficie p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-app bg-superficie hairline p-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-texto-suave">
+          <p className="text-micro font-medium uppercase tracking-wide text-texto-suave">
             Presupuestado este mes
           </p>
-          <p className="cifra mt-0.5 text-lg font-semibold text-texto">
+          <p className="cifra mt-0.5 text-subheading font-semibold text-texto">
             {moneda.format(totalGastado)}{" "}
-            <span className="text-sm font-normal text-texto-suave">
+            <span className="text-caption font-normal text-texto-suave">
               de {moneda.format(totalTope)}
             </span>
           </p>
@@ -75,7 +75,7 @@ export function EditorPresupuestos({
 
       {conTope.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold text-texto">Con tope</h2>
+          <h2 className="mb-2 text-caption font-semibold text-texto">Con tope</h2>
           <Tarjeta className="overflow-hidden">
             <ul className="divide-y divide-borde">
               {conTope.map((p) => (
@@ -88,8 +88,8 @@ export function EditorPresupuestos({
 
       {sinTope.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold text-texto">Sin tope</h2>
-          <p className="mb-2 text-xs text-texto-suave">
+          <h2 className="mb-2 text-caption font-semibold text-texto">Sin tope</h2>
+          <p className="mb-2 text-micro text-texto-suave">
             Ponle un tope a las categorías que quieras vigilar de cerca.
           </p>
           <Tarjeta className="overflow-hidden">
@@ -154,10 +154,10 @@ function FilaPresupuesto({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-texto">{p.nombre}</span>
+            <span className="truncate text-caption font-medium text-texto">{p.nombre}</span>
             {p.estado === "excedido" && p.tope > 0 && <Insignia tono="egreso">Excedido</Insignia>}
           </div>
-          <p className="cifra text-xs text-texto-suave">
+          <p className="cifra text-micro text-texto-suave">
             Gastado {moneda.format(p.gastado)}
             {p.tope > 0 && ` de ${moneda.format(p.tope)}`}
           </p>
@@ -176,7 +176,7 @@ function FilaPresupuesto({
               autoFocus
               aria-label={`Tope de ${p.nombre}`}
               placeholder="Sin tope"
-              className="h-9 w-28 text-right text-sm"
+              className="h-9 w-28 text-right text-caption"
             />
             <Boton
               variante="fantasma"
@@ -200,7 +200,7 @@ function FilaPresupuesto({
           <div className="flex shrink-0 items-center gap-2">
             <span
               className={cn(
-                "cifra text-sm font-semibold",
+                "cifra text-caption font-semibold",
                 p.tope > 0 ? TEXTO_ESTADO[p.estado] : "text-texto-suave",
               )}
             >

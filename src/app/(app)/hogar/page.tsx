@@ -11,10 +11,10 @@ export default async function PaginaHogar() {
   const { ctx, miembros, invitaciones } = await datosDelHogar();
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <header>
-        <h1 className="text-xl font-semibold tracking-tight text-texto">{ctx.hogar.nombre}</h1>
-        <p className="text-sm text-texto-suave">
+        <h1 className="text-heading font-medium text-texto">{ctx.hogar.nombre}</h1>
+        <p className="text-caption text-texto-suave">
           Quién administra estas finanzas y con qué moneda se llevan.
         </p>
       </header>

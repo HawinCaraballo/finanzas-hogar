@@ -27,19 +27,19 @@ export function Comparativa({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[34rem] border-collapse text-sm">
+      <table className="w-full min-w-[34rem] border-collapse text-caption">
         <thead>
           <tr className="border-b border-borde">
-            <th className="py-2 pr-3 text-left text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
+            <th className="py-2 pr-3 text-left text-micro font-semibold uppercase tracking-wide text-texto-suave">
               Persona
             </th>
-            <th className="px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
+            <th className="px-3 py-2 text-right text-micro font-semibold uppercase tracking-wide text-texto-suave">
               Ingresos
             </th>
-            <th className="px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
+            <th className="px-3 py-2 text-right text-micro font-semibold uppercase tracking-wide text-texto-suave">
               Gastos
             </th>
-            <th className="py-2 pl-3 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
+            <th className="py-2 pl-3 text-right text-micro font-semibold uppercase tracking-wide text-texto-suave">
               Balance
             </th>
           </tr>
@@ -58,7 +58,7 @@ export function Comparativa({
                   <span className="truncate font-medium text-texto">
                     {f.nombre}
                     {f.userId === usuarioActualId && (
-                      <span className="ml-1 text-xs font-normal text-texto-suave">(tú)</span>
+                      <span className="ml-1 text-micro font-normal text-texto-suave">(tú)</span>
                     )}
                   </span>
                 </div>
@@ -132,7 +132,7 @@ function Celda({
       <span className={cn("cifra block font-medium", clase)}>{monto}</span>
       <span className="mt-1 flex items-center justify-end gap-1.5">
         <Barra porcentaje={porcentaje} color={tono} className="h-1 w-12" />
-        <span className="cifra w-9 text-right text-[11px] text-texto-suave">
+        <span className="cifra w-9 text-right text-micro text-texto-suave">
           {porcentaje.toFixed(0)} %
         </span>
       </span>

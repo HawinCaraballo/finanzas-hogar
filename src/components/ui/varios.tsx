@@ -2,6 +2,10 @@ import * as React from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Insignia de estado del manual: píldora completa, fondo del tono que
+ * corresponda y texto en su versión oscurecida para que se lea encima.
+ */
 export function Insignia({
   className,
   tono = "neutro",
@@ -11,15 +15,15 @@ export function Insignia({
 }) {
   const tonos = {
     neutro: "bg-superficie-2 text-texto-suave",
-    marca: "bg-marca-suave text-marca",
+    marca: "bg-marca-suave text-marca-fuerte",
     ingreso: "bg-ingreso-suave text-ingreso",
     egreso: "bg-egreso-suave text-egreso",
-    alerta: "bg-alerta/15 text-alerta",
+    alerta: "bg-alerta-suave text-alerta",
   } as const;
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-pastilla px-2.5 py-1 text-micro font-medium",
         tonos[tono],
         className,
       )}
@@ -42,7 +46,7 @@ export function Barra({
   const ancho = Math.min(100, Math.max(0, porcentaje));
   return (
     <div
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-superficie-2", className)}
+      className={cn("h-2 w-full overflow-hidden rounded-pastilla bg-superficie-2", className)}
       role="progressbar"
       aria-valuenow={Math.round(porcentaje)}
       aria-valuemin={0}
@@ -50,7 +54,7 @@ export function Barra({
       aria-label={etiqueta}
     >
       <div
-        className={cn("h-full rounded-full transition-[width] duration-500", color)}
+        className={cn("h-full rounded-pastilla transition-[width] duration-500", color)}
         style={{ width: `${ancho}%` }}
       />
     </div>
@@ -69,13 +73,13 @@ export function EstadoVacio({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
-      <div className="grid size-12 place-items-center rounded-full bg-superficie-2 text-texto-suave">
-        <Icono className="size-5" aria-hidden />
+    <div className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
+      <div className="grid size-14 place-items-center rounded-pastilla bg-superficie-2 text-texto-suave">
+        <Icono className="size-6" aria-hidden />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-texto">{titulo}</p>
-        <p className="mx-auto max-w-xs text-sm text-texto-suave">{descripcion}</p>
+        <p className="text-subheading font-medium text-texto">{titulo}</p>
+        <p className="mx-auto max-w-xs text-caption text-texto-suave">{descripcion}</p>
       </div>
       {children}
     </div>
@@ -98,7 +102,7 @@ export function PuntoCategoria({
 }) {
   return (
     <span
-      className={cn("grid size-9 shrink-0 place-items-center rounded-full", className)}
+      className={cn("grid size-9 shrink-0 place-items-center rounded-pastilla", className)}
       style={{ backgroundColor: `${color}1f`, color }}
     >
       {children}

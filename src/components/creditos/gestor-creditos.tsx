@@ -52,7 +52,7 @@ export function GestorCreditos({
         <>
           {activos.length > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-semibold text-texto">Activos</h2>
+              <h2 className="text-caption font-semibold text-texto">Activos</h2>
               {activos.map((c) => (
                 <TarjetaCredito key={c.id} credito={c} />
               ))}
@@ -61,7 +61,7 @@ export function GestorCreditos({
 
           {pagados.length > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-semibold text-texto">Pagados</h2>
+              <h2 className="text-caption font-semibold text-texto">Pagados</h2>
               {pagados.map((c) => (
                 <TarjetaCredito key={c.id} credito={c} />
               ))}
@@ -100,20 +100,20 @@ function TarjetaCredito({ credito: c }: { credito: CreditoConResumen }) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-sm font-semibold text-texto">{c.nombre}</h3>
+              <h3 className="truncate text-caption font-semibold text-texto">{c.nombre}</h3>
               <Insignia tono={c.activo ? "marca" : "ingreso"}>
                 {c.activo ? ETIQUETA_CREDITO[c.kind] : "Pagado"}
               </Insignia>
             </div>
-            <p className="mt-0.5 text-xs text-texto-suave">
+            <p className="mt-0.5 text-micro text-texto-suave">
               Cuota {moneda.format(c.installmentAmount)} · {c.resumen.cuotasPagadas} de{" "}
               {c.totalInstallments} pagadas
             </p>
           </div>
 
           <div className="shrink-0 text-right">
-            <p className="text-[11px] uppercase tracking-wide text-texto-suave">Falta</p>
-            <p className="cifra text-base font-semibold text-texto">
+            <p className="text-micro uppercase tracking-wide text-texto-suave">Falta</p>
+            <p className="cifra text-body font-semibold text-texto">
               {moneda.format(c.resumen.saldoPendiente)}
             </p>
           </div>
@@ -126,7 +126,7 @@ function TarjetaCredito({ credito: c }: { credito: CreditoConResumen }) {
           className="mt-3"
         />
 
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-texto-suave">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-micro text-texto-suave">
           <span>{c.resumen.progreso.toFixed(0)} % pagado</span>
           {c.resumen.proximaCuota && (
             <span className="flex items-center gap-1">
@@ -318,7 +318,7 @@ function FormularioCredito({
         <button
           type="button"
           onClick={() => setValue("installmentAmount", sugerida, { shouldValidate: true })}
-          className="w-full rounded-app bg-marca-suave px-3 py-2 text-left text-xs text-marca transition-opacity hover:opacity-80"
+          className="w-full rounded-app bg-marca-suave px-3 py-2 text-left text-micro text-marca-fuerte transition-opacity hover:opacity-80"
         >
           Con esos datos la cuota sería <strong>{moneda.format(sugerida)}</strong>. Tócalo para
           usarla.

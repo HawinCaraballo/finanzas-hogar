@@ -44,7 +44,7 @@ export function DialogoContenido({
         }}
         className={cn(
           // En móvil sube desde abajo ocupando el ancho; en escritorio es un panel centrado.
-          "fixed z-50 flex flex-col bg-superficie shadow-xl outline-none",
+          "fixed z-50 flex flex-col bg-superficie flotante outline-none",
           "inset-x-0 bottom-0 max-h-[92dvh] rounded-t-2xl",
           "sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-app sm:border sm:border-borde",
           className,
@@ -53,11 +53,11 @@ export function DialogoContenido({
       >
         <div className="flex items-start justify-between gap-4 border-b border-borde p-4 sm:p-5">
           <div className="min-w-0">
-            <DialogPrimitive.Title className="text-base font-semibold text-texto">
+            <DialogPrimitive.Title className="text-body font-semibold text-texto">
               {titulo}
             </DialogPrimitive.Title>
             {descripcion ? (
-              <DialogPrimitive.Description className="mt-0.5 text-xs text-texto-suave">
+              <DialogPrimitive.Description className="mt-0.5 text-micro text-texto-suave">
                 {descripcion}
               </DialogPrimitive.Description>
             ) : (
@@ -65,7 +65,7 @@ export function DialogoContenido({
             )}
           </div>
           <DialogPrimitive.Close
-            className="-m-1 rounded-app p-2 text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
+            className="-m-1 rounded-pastilla p-2 text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
             aria-label="Cerrar"
           >
             <X className="size-4" />

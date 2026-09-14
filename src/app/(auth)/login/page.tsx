@@ -7,17 +7,17 @@ export const metadata: Metadata = { title: "Iniciar sesión" };
 
 export default function PaginaLogin() {
   return (
-    <div className="rounded-app border border-borde bg-superficie p-6">
-      <h2 className="text-base font-semibold text-texto">Inicia sesión</h2>
-      <p className="mb-5 mt-1 text-sm text-texto-suave">Entra con tu correo y contraseña.</p>
+    <div className="rounded-app bg-superficie hairline p-6">
+      <h2 className="text-body font-semibold text-texto">Inicia sesión</h2>
+      <p className="mb-5 mt-1 text-caption text-texto-suave">Entra con tu correo y contraseña.</p>
 
       <Suspense fallback={null}>
         <FormularioLogin />
       </Suspense>
 
-      <p className="mt-5 text-center text-sm text-texto-suave">
+      <p className="mt-5 text-center text-caption text-texto-suave">
         ¿Todavía no tienes cuenta?{" "}
-        <Link href="/registro" className="font-medium text-marca hover:underline">
+        <Link href="/registro" className="font-medium text-marca-fuerte hover:underline">
           Crea una
         </Link>
       </p>

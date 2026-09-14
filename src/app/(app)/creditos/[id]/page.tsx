@@ -34,10 +34,10 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       <Link
         href="/creditos"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-texto-suave transition-colors hover:text-texto"
+        className="inline-flex items-center gap-1.5 text-caption font-medium text-texto-suave transition-colors hover:text-texto"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Créditos
@@ -45,12 +45,12 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
 
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-xl font-semibold tracking-tight text-texto">{credito.nombre}</h1>
+          <h1 className="text-heading font-medium text-texto">{credito.nombre}</h1>
           <Insignia tono={credito.activo ? "marca" : "ingreso"}>
             {credito.activo ? ETIQUETA_CREDITO[credito.kind] : "Pagado"}
           </Insignia>
         </div>
-        <p className="text-sm text-texto-suave">
+        <p className="text-caption text-texto-suave">
           {r.cuotasPagadas} de {credito.totalInstallments} cuotas ·{" "}
           <MontoServidor valor={credito.installmentAmount} /> cada una
         </p>
@@ -61,8 +61,8 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
       <Tarjeta>
         <TarjetaContenido className="pt-4 sm:pt-5">
           <div className="mb-1.5 flex items-baseline justify-between gap-3">
-            <span className="text-sm font-medium text-texto">{r.progreso.toFixed(0)} % pagado</span>
-            <span className="cifra text-sm text-texto-suave">
+            <span className="text-caption font-medium text-texto">{r.progreso.toFixed(0)} % pagado</span>
+            <span className="cifra text-caption text-texto-suave">
               Faltan {r.cuotasRestantes} {r.cuotasRestantes === 1 ? "cuota" : "cuotas"}
             </span>
           </div>
@@ -76,17 +76,17 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
           <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {cifras.map((c) => (
               <div key={c.etiqueta}>
-                <dt className="text-[11px] uppercase tracking-wide text-texto-suave">
+                <dt className="text-micro uppercase tracking-wide text-texto-suave">
                   {c.etiqueta}
                 </dt>
-                <dd className={`cifra mt-0.5 text-sm font-semibold ${c.clase ?? "text-texto"}`}>
+                <dd className={`cifra mt-0.5 text-caption font-semibold ${c.clase ?? "text-texto"}`}>
                   <MontoServidor valor={c.valor} />
                 </dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-borde pt-3 text-xs text-texto-suave">
+          <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 border-t border-borde pt-3 text-micro text-texto-suave">
             {r.proximaCuota && (
               <span className="flex items-center gap-1.5">
                 <CalendarClock className="size-3.5" aria-hidden />

@@ -24,8 +24,8 @@ export function ResumenPresupuestos({ presupuestos }: { presupuestos: Presupuest
               >
                 <Icono className="size-3" aria-hidden />
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm text-texto">{p.nombre}</span>
-              <span className={cn("cifra shrink-0 text-xs font-semibold", TEXTO_ESTADO[p.estado])}>
+              <span className="min-w-0 flex-1 truncate text-caption text-texto">{p.nombre}</span>
+              <span className={cn("cifra shrink-0 text-micro font-semibold", TEXTO_ESTADO[p.estado])}>
                 {p.porcentaje.toFixed(0)} %
               </span>
             </div>
@@ -36,7 +36,7 @@ export function ResumenPresupuestos({ presupuestos }: { presupuestos: Presupuest
               etiqueta={`Presupuesto de ${p.nombre}`}
             />
 
-            <p className="cifra mt-1 text-xs text-texto-suave">
+            <p className="cifra mt-1 text-micro text-texto-suave">
               {moneda.format(p.gastado)} de {moneda.format(p.tope)}
               {p.restante < 0 && (
                 <span className="font-medium text-egreso">
