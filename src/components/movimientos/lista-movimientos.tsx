@@ -112,14 +112,16 @@ function Fila({
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
             <span className="truncate text-sm font-medium text-texto">
-              {movimiento.descripcion}
+              {/* Sin descripción, la categoría hace de título. */}
+              {movimiento.descripcion || movimiento.categoria.nombre}
             </span>
             {movimiento.esRecurrente && (
               <Repeat className="size-3 shrink-0 text-texto-suave" aria-label="Movimiento recurrente" />
             )}
           </span>
           <span className="block truncate text-xs text-texto-suave">
-            {movimiento.categoria.nombre} ·{" "}
+            {/* Si la categoría ya es el título, repetirla aquí sobra. */}
+            {movimiento.descripcion ? `${movimiento.categoria.nombre} · ` : ""}
             {esIngreso ? "recibió" : "pagó"} {movimiento.responsable.nombre}
             {/*
               Solo se menciona a quien registró cuando NO es quien puso la

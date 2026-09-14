@@ -226,7 +226,7 @@ export function FormularioMovimiento({
         </Campo>
 
         <Campo
-          etiqueta="Descripción"
+          etiqueta="Descripción (opcional)"
           htmlFor="descripcion"
           error={errors.descripcion?.message}
         >
