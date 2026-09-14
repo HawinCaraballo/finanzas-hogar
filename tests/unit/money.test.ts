@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   decimalesDe,
+  formatearEntradaMonto,
   formatMoney,
   parseMoney,
   redondear,
@@ -96,5 +97,86 @@ describe("variacionPorcentual", () => {
 
   it("devuelve null cuando no hay base de comparación", () => {
     expect(variacionPorcentual(100, 0)).toBeNull();
+  });
+});
+
+describe("formatearEntradaMonto", () => {
+  // Teclea carácter a carácter, como una persona, partiendo de lo que el campo
+  // ya muestra. Es la única forma de cazar los fallos acumulativos.
+  function teclear(texto: string, config: { currency: string; locale: string }) {
+    let actual = "";
+    for (const tecla of texto) {
+      actual = formatearEntradaMonto(actual + tecla, config).texto;
+    }
+    return actual;
+  }
+
+  describe("monedas sin decimales (COP)", () => {
+    it("separa los miles al teclear un millón", () => {
+      expect(teclear("1000000", COP)).toBe("1.000.000");
+    });
+
+    it("va poniendo los separadores conforme crece", () => {
+      expect(teclear("1", COP)).toBe("1");
+      expect(teclear("100", COP)).toBe("100");
+      expect(teclear("1000", COP)).toBe("1.000");
+      expect(teclear("10000", COP)).toBe("10.000");
+    });
+
+    it("acepta que le peguen un valor ya formateado sin deformarlo", () => {
+      expect(formatearEntradaMonto("1.250.000", COP).texto).toBe("1.250.000");
+      expect(formatearEntradaMonto("1.250.000", COP).valor).toBe(1250000);
+    });
+
+    it("no admite decimales en una moneda que no los usa", () => {
+      expect(formatearEntradaMonto("1250,75", COP).valor).toBe(125075);
+    });
+  });
+
+  describe("monedas con decimales (USD)", () => {
+    it("separa los miles al teclear un millón", () => {
+      expect(teclear("1000000", USD)).toBe("1,000,000");
+    });
+
+    it("no fuerza los decimales mientras se escribe", () => {
+      expect(teclear("1000", USD)).toBe("1,000");
+    });
+
+    it("deja escribir el separador decimal y seguir", () => {
+      expect(teclear("1000.", USD)).toBe("1,000.");
+      expect(teclear("1000.5", USD)).toBe("1,000.5");
+      expect(teclear("1000.55", USD)).toBe("1,000.55");
+    });
+
+    it("recorta lo que sobra de dos decimales", () => {
+      expect(formatearEntradaMonto("1000.555", USD).texto).toBe("1,000.55");
+      expect(formatearEntradaMonto("1000.555", USD).valor).toBe(1000.55);
+    });
+
+    it("solo respeta el primer separador decimal", () => {
+      expect(formatearEntradaMonto("1.2.3", USD).texto).toBe("1.23");
+    });
+  });
+
+  describe("casos de borde", () => {
+    it("el campo vacío devuelve vacío y cero", () => {
+      expect(formatearEntradaMonto("", COP)).toEqual({ texto: "", valor: 0 });
+    });
+
+    it("un texto sin dígitos no deja nada", () => {
+      expect(formatearEntradaMonto("abc", COP)).toEqual({ texto: "", valor: 0 });
+    });
+
+    it("ignora el símbolo de moneda y los espacios", () => {
+      expect(formatearEntradaMonto("$ 45.000", COP).valor).toBe(45000);
+    });
+
+    it("quita los ceros a la izquierda", () => {
+      expect(formatearEntradaMonto("007", COP).texto).toBe("7");
+    });
+
+    it("mantiene el cero solo", () => {
+      expect(formatearEntradaMonto("0", COP).texto).toBe("0");
+    });
   });
 });

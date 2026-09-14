@@ -71,7 +71,11 @@ export const movimientoSchema = z.object({
   amount: montoSchema,
   categoryId: z.string().min(1, "Elige una categoría"),
   date: fechaISOSchema,
-  descripcion: z.string().trim().min(1, "Escribe una descripción").max(120),
+  // Opcional a propósito: la categoría ya dice de qué va el movimiento, y
+  // obligar a describirlo solo añade fricción al registro rápido. En las
+  // reglas recurrentes sí es obligatoria, porque ahí es lo único que las
+  // distingue en la lista.
+  descripcion: z.string().trim().max(120, "Máximo 120 caracteres").optional(),
   notas: z.string().trim().max(500).optional().or(z.literal("")),
   loanId: z.string().optional().or(z.literal("")),
   // Quién puso la plata. Si no viene, la acción usa al usuario de la sesión.

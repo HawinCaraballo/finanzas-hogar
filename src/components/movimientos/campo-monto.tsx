@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMoneda } from "@/components/moneda-provider";
+import { formatearEntradaMonto } from "@/lib/money";
 import { FOCO_INICIAL } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -42,20 +43,10 @@ export function CampoMonto({
   }, [valor]);
 
   function escribir(entrada: string) {
-    const numero = moneda.parse(entrada);
-    if (entrada.trim() === "") {
-      setTexto("");
-      onChange(0);
-      return;
-    }
-    if (Number.isNaN(numero)) {
-      setTexto(entrada);
-      return;
-    }
-    // Mientras el usuario está escribiendo los decimales no se reformatea,
-    // si no sería imposible escribir "1.250,5".
-    const escribiendoDecimales = /[.,]\d*$/.test(entrada.trim());
-    setTexto(escribiendoDecimales ? entrada : moneda.formatNumero(numero));
+    // Toda la lógica vive en formatearEntradaMonto, que está probada tecla a
+    // tecla. Aquí solo se pinta lo que devuelve.
+    const { texto: nuevo, valor: numero } = formatearEntradaMonto(entrada, moneda);
+    setTexto(nuevo);
     onChange(numero);
   }
 

@@ -178,3 +178,39 @@ test("cerrar sesión termina la sesión de verdad", async ({ page, context }) =>
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login/);
 });
+
+test("el campo de monto separa los miles mientras se escribe", async ({ page }) => {
+  await crearCuentaYHogar(page, "Hogar del monto");
+  await page.getByRole("button", { name: "Registrar movimiento" }).first().click();
+
+  const dialogo = page.getByRole("dialog");
+  const monto = dialogo.getByLabel("Monto");
+
+  // Tecla a tecla, como una persona. Rellenar de golpe no cazaría el fallo,
+  // que era acumulativo: el campo dejaba de formatear tras el primer millar.
+  await monto.click();
+  await page.keyboard.type("1000000", { delay: 30 });
+  await expect(monto).toHaveValue("1.000.000");
+
+  // Y borrando hacia atrás se recolocan los puntos.
+  await page.keyboard.press("Backspace");
+  await expect(monto).toHaveValue("100.000");
+});
+
+test("se puede registrar un gasto sin descripción", async ({ page }) => {
+  await crearCuentaYHogar(page, "Hogar sin descripción");
+  await page.getByRole("button", { name: "Registrar movimiento" }).first().click();
+
+  const dialogo = page.getByRole("dialog");
+  await dialogo.getByLabel("Monto").fill("75000");
+  await dialogo.getByRole("button", { name: "Mercado", exact: true }).click();
+  // A propósito: no se toca la descripción.
+  await dialogo.getByRole("button", { name: "Registrar gasto" }).click();
+  await expect(dialogo).toBeHidden();
+
+  // Sin descripción, la categoría hace de título y no se repite debajo.
+  await page.goto("/movimientos");
+  const fila = page.locator("li").filter({ hasText: "75.000" });
+  await expect(fila).toContainText("Mercado");
+  await expect(fila).toContainText("pagó");
+});
