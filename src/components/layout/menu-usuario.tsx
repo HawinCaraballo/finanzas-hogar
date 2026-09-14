@@ -81,7 +81,14 @@ export function MenuUsuario({
 
           <DropdownMenu.Separator className="my-1 h-px bg-borde" />
 
-          <DropdownMenu.Item asChild>
+          {/*
+            Sin el preventDefault, Radix cierra el menú en cuanto se pulsa y
+            React desmonta este formulario ANTES de que el navegador despache el
+            submit: un formulario fuera del documento no envía nada, y la sesión
+            no se cerraba. Al no cerrar el menú, el submit llega y signOut
+            redirige a /login.
+          */}
+          <DropdownMenu.Item asChild onSelect={(e) => e.preventDefault()}>
             <form action={salir}>
               <button
                 type="submit"
