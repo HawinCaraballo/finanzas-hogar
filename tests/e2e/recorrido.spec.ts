@@ -152,3 +152,29 @@ test("cada hogar ve solo sus propios movimientos", async ({ page, context }) => 
   await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 1, name: "Hogar B" })).toBeVisible();
 });
+
+test("cerrar sesión termina la sesión de verdad", async ({ page, context }) => {
+  await crearCuentaYHogar(page, "Hogar que se cierra");
+
+  // El overlay de desarrollo de Next se dibuja justo encima del menú de
+  // usuario, en la esquina inferior izquierda, y se come el clic. No existe en
+  // producción; aquí estorba solo a la prueba.
+  await page.addStyleTag({ content: "nextjs-portal{display:none !important}" });
+
+  await expect(
+    (await context.cookies()).some((c) => c.name === "authjs.session-token"),
+  ).toBe(true);
+
+  await page.getByRole("button", { name: "Tu cuenta" }).click();
+  await page.getByText("Cerrar sesión").click();
+
+  // Vuelve al login y la cookie de sesión desaparece.
+  await page.waitForURL("**/login", { timeout: 15_000 });
+  await expect(
+    (await context.cookies()).some((c) => c.name === "authjs.session-token"),
+  ).toBe(false);
+
+  // Y el dashboard deja de ser accesible.
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/login/);
+});
