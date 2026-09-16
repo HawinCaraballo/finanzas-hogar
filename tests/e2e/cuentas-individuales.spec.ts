@@ -168,3 +168,72 @@ test("un movimiento se puede atribuir a otra persona del hogar", async ({ page, 
   await verCuentaDe(page, "Luis Recibe (yo)");
   await expect(page.locator("body")).not.toContainText("250.000");
 });
+
+/**
+ * Monta un hogar con dos personas y deja la sesión abierta con la segunda.
+ * Devuelve el nombre de la primera, que es a quien se le atribuirán las cosas.
+ */
+async function hogarConDosPersonas(
+  page: Page,
+  context: { clearCookies: () => Promise<void> },
+  nombreHogar: string,
+): Promise<string> {
+  const primera = "Ana Titular";
+  await registrarCuenta(page, primera);
+  await crearHogar(page, nombreHogar);
+  const enlace = await invitar(page);
+
+  await context.clearCookies();
+  await registrarCuenta(page, "Luis Segundo");
+  await page.goto(new URL(enlace).pathname);
+  await page.getByRole("button", { name: "Unirme al hogar" }).click();
+  await page.waitForURL("**/dashboard");
+  return primera;
+}
+
+test("una regla recurrente se puede asignar a otra persona", async ({ page, context }) => {
+  const otra = await hogarConDosPersonas(page, context, "Hogar de recurrentes");
+
+  await page.goto("/recurrentes");
+  await page.getByRole("button", { name: "Nueva regla" }).click();
+
+  const dialogo = page.getByRole("dialog");
+  await dialogo.getByLabel("Monto").fill("1800000");
+  await dialogo.getByLabel("Descripción").fill("Arriendo");
+  await dialogo.getByLabel("Categoría").selectOption({ label: "Arriendo o hipoteca" });
+  await dialogo.getByLabel("¿Quién lo paga?").selectOption({ label: otra });
+  await dialogo.getByRole("button", { name: "Crear regla" }).click();
+  await expect(dialogo).toBeHidden();
+
+  // La fila deja claro de quién es el gasto fijo.
+  const fila = page.locator("li").filter({ hasText: "Arriendo" });
+  await expect(fila).toContainText(`paga ${otra}`);
+});
+
+test("la cuota de un crédito se puede asignar a otra persona", async ({ page, context }) => {
+  const otra = await hogarConDosPersonas(page, context, "Hogar de créditos");
+
+  await page.goto("/creditos");
+  await page.getByRole("button", { name: "Nuevo crédito" }).click();
+
+  const alta = page.getByRole("dialog");
+  await alta.getByLabel("Nombre").fill("Crédito de prueba");
+  await alta.getByLabel("Categoría de la cuota").selectOption({ label: "Cuota de crédito" });
+  await alta.getByLabel("Monto prestado").fill("12000000");
+  await alta.getByLabel("Número de cuotas").fill("12");
+  await alta.getByLabel("Valor de la cuota").fill("1100000");
+  await alta.getByRole("button", { name: "Registrar crédito" }).click();
+  await expect(alta).toBeHidden();
+
+  await page.getByText("Crédito de prueba").click();
+  await page.getByRole("button", { name: "Registrar cuota" }).click();
+
+  const pago = page.getByRole("dialog");
+  await pago.getByLabel("¿Quién pagó la cuota?").selectOption({ label: otra });
+  await pago.getByRole("button", { name: "Registrar pago" }).click();
+  await expect(pago).toBeHidden();
+
+  // El pago queda a nombre de la otra persona, no de quien lo registró.
+  const pagos = page.locator("li").filter({ hasText: "cuota 1 de 12" });
+  await expect(pagos).toContainText(`pagó ${otra}`);
+});

@@ -17,7 +17,7 @@ import { Controller } from "react-hook-form";
 import { iconoPorNombre } from "@/lib/iconos";
 import { aFechaISO, fechaLegible, parseFechaISO, soloFecha } from "@/lib/periodo";
 import { ETIQUETA_FRECUENCIA } from "@/lib/recurrencia";
-import type { CategoriaVista, RecurrenteVista } from "@/lib/tipos";
+import type { CategoriaVista, MiembroVista, RecurrenteVista } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
 import { recurrenteSchema, type RecurrenteInput } from "@/lib/validaciones";
 import {
@@ -30,9 +30,13 @@ import {
 export function GestorRecurrentes({
   reglas,
   categorias,
+  miembros,
+  usuarioActualId,
 }: {
   reglas: RecurrenteVista[];
   categorias: CategoriaVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
 }) {
   const router = useRouter();
   const [editando, setEditando] = useState<RecurrenteVista | "nueva" | null>(null);
@@ -69,6 +73,7 @@ export function GestorRecurrentes({
               <Fila
                 key={r.id}
                 regla={r}
+                mostrarResponsable={miembros.length > 1}
                 onEditar={() => setEditando(r)}
                 onAlternar={() =>
                   accion(
@@ -92,6 +97,8 @@ export function GestorRecurrentes({
           >
             <FormularioRecurrente
               categorias={categorias}
+              miembros={miembros}
+              usuarioActualId={usuarioActualId}
               regla={editando === "nueva" ? undefined : editando}
               onListo={() => {
                 setEditando(null);
@@ -107,12 +114,14 @@ export function GestorRecurrentes({
 
 function Fila({
   regla: r,
+  mostrarResponsable,
   onEditar,
   onAlternar,
   onBorrar,
   onRegistrar,
 }: {
   regla: RecurrenteVista;
+  mostrarResponsable: boolean;
   onEditar: () => void;
   onAlternar: () => void;
   onBorrar: () => void;
@@ -156,6 +165,8 @@ function Fila({
           <CalendarClock className="size-3" aria-hidden />
           {ETIQUETA_FRECUENCIA[r.frequency]} · próxima{" "}
           <span className="first-letter:uppercase">{fechaLegible(r.proximaFecha)}</span>
+          {mostrarResponsable &&
+            ` · ${esIngreso ? "recibe" : "paga"} ${r.responsable.nombre}`}
         </p>
       </div>
 
@@ -196,10 +207,14 @@ function Fila({
 
 function FormularioRecurrente({
   categorias,
+  miembros,
+  usuarioActualId,
   regla,
   onListo,
 }: {
   categorias: CategoriaVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   regla?: RecurrenteVista;
   onListo: () => void;
 }) {
@@ -223,6 +238,7 @@ function FormularioRecurrente({
           startDate: regla.fechaInicio,
           endDate: regla.fechaFin ?? "",
           autoPost: regla.autoPost,
+          paidByUserId: regla.responsable.id,
         }
       : {
           type: "EGRESO",
@@ -234,6 +250,7 @@ function FormularioRecurrente({
           startDate: aFechaISO(new Date()),
           endDate: "",
           autoPost: true,
+          paidByUserId: usuarioActualId,
         },
   });
 
@@ -301,6 +318,27 @@ function FormularioRecurrente({
           ))}
         </Seleccion>
       </Campo>
+
+      {/*
+        Sin este campo, el cron atribuía lo que genera al primer administrador
+        del hogar. Aquí se dice de quién es de verdad el gasto fijo.
+      */}
+      {miembros.length > 1 && (
+        <Campo
+          etiqueta={tipo === "INGRESO" ? "¿Quién lo recibe?" : "¿Quién lo paga?"}
+          htmlFor="pagador-rec"
+          ayuda="En cuya cuenta individual entrarán los movimientos que genere esta regla."
+          error={errors.paidByUserId?.message}
+        >
+          <Seleccion id="pagador-rec" {...register("paidByUserId")}>
+            {miembros.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.id === usuarioActualId ? `${m.nombre} (yo)` : m.nombre}
+              </option>
+            ))}
+          </Seleccion>
+        </Campo>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         {(frecuencia === "MENSUAL" || frecuencia === "ANUAL") && (
