@@ -210,7 +210,7 @@ test("una regla recurrente se puede asignar a otra persona", async ({ page, cont
   await expect(fila).toContainText(`paga ${otra}`);
 });
 
-test("la cuota de un crédito se puede asignar a otra persona", async ({ page, context }) => {
+test("un crédito se asigna a una persona y sus cuotas la heredan", async ({ page, context }) => {
   const otra = await hogarConDosPersonas(page, context, "Hogar de créditos");
 
   await page.goto("/creditos");
@@ -219,21 +219,27 @@ test("la cuota de un crédito se puede asignar a otra persona", async ({ page, c
   const alta = page.getByRole("dialog");
   await alta.getByLabel("Nombre").fill("Crédito de prueba");
   await alta.getByLabel("Categoría de la cuota").selectOption({ label: "Cuota de crédito" });
+  // El responsable se elige una sola vez, al crear el crédito.
+  await alta.getByLabel("¿Quién lo paga?").selectOption({ label: otra });
   await alta.getByLabel("Monto prestado").fill("12000000");
   await alta.getByLabel("Número de cuotas").fill("12");
   await alta.getByLabel("Valor de la cuota").fill("1100000");
   await alta.getByRole("button", { name: "Registrar crédito" }).click();
   await expect(alta).toBeHidden();
 
+  // La tarjeta lo dice sin tener que entrar.
+  await expect(page.locator("a").filter({ hasText: "Crédito de prueba" })).toContainText(
+    `paga ${otra}`,
+  );
+
   await page.getByText("Crédito de prueba").click();
   await page.getByRole("button", { name: "Registrar cuota" }).click();
 
+  // No se toca el pagador: la cuota debe heredar al responsable del crédito.
   const pago = page.getByRole("dialog");
-  await pago.getByLabel("¿Quién pagó la cuota?").selectOption({ label: otra });
   await pago.getByRole("button", { name: "Registrar pago" }).click();
   await expect(pago).toBeHidden();
 
-  // El pago queda a nombre de la otra persona, no de quien lo registró.
   const pagos = page.locator("li").filter({ hasText: "cuota 1 de 12" });
   await expect(pagos).toContainText(`pagó ${otra}`);
 });

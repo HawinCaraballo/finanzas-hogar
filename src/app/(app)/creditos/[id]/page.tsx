@@ -59,6 +59,7 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
         <p className="text-sm text-texto-suave">
           {r.cuotasPagadas} de {credito.totalInstallments} cuotas ·{" "}
           <MontoServidor valor={credito.installmentAmount} /> cada una
+          {miembros.length > 1 && ` · paga ${credito.responsable.nombre}`}
         </p>
       </header>
 

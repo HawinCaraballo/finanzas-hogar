@@ -24,6 +24,7 @@ function aVista(c: {
   startDate: Date;
   categoryId: string;
   status: string;
+  responsable: { id: string; nombre: string };
 }): CreditoVista {
   return {
     id: c.id,
@@ -36,6 +37,7 @@ function aVista(c: {
     fechaInicio: aFechaISO(c.startDate),
     categoryId: c.categoryId,
     activo: c.status === "ACTIVO",
+    responsable: c.responsable,
   };
 }
 
@@ -44,6 +46,7 @@ export async function creditosActivos(): Promise<CreditoVista[]> {
   const ctx = await requireHogar();
   const filas = await prisma.loan.findMany({
     where: { householdId: ctx.hogar.id, status: "ACTIVO" },
+    include: { responsable: { select: { id: true, nombre: true } } },
     orderBy: { nombre: "asc" },
   });
   return filas.map(aVista);
@@ -53,7 +56,10 @@ export async function listarCreditos(): Promise<CreditoConResumen[]> {
   const ctx = await requireHogar();
   const filas = await prisma.loan.findMany({
     where: { householdId: ctx.hogar.id },
-    include: { pagos: { select: { amount: true } } },
+    include: {
+      pagos: { select: { amount: true } },
+      responsable: { select: { id: true, nombre: true } },
+    },
     orderBy: [{ status: "asc" }, { startDate: "desc" }],
   });
 
@@ -90,6 +96,7 @@ export async function creditoConPagos(id: string): Promise<{
   const fila = await prisma.loan.findFirst({
     where: { id, householdId: ctx.hogar.id },
     include: {
+      responsable: { select: { id: true, nombre: true } },
       pagos: {
         include: {
           categoria: { select: { id: true, nombre: true, icon: true, color: true } },
@@ -151,7 +158,11 @@ export async function guardarCredito(entrada: unknown): Promise<Resultado> {
     });
     if (!categoria) return fallo("Elige una categoría de gasto para las cuotas.");
 
+    const paidByUserId = await miembroValido(ctx.hogar.id, datos.paidByUserId, ctx.user.id);
+    if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
+
     const comunes = {
+      paidByUserId,
       nombre: datos.nombre,
       kind: datos.kind,
       categoryId: datos.categoryId,
@@ -207,16 +218,13 @@ export async function pagarCuota(entrada: unknown): Promise<Resultado> {
     const numeroCuota = Math.min(resumen.cuotasPagadas + 1, credito.totalInstallments);
 
     // La cuota la puede estar registrando alguien distinto de quien la pagó.
-    const paidByUserId = datos.paidByUserId
-      ? (
-          await prisma.householdMember.findUnique({
-            where: {
-              userId_householdId: { userId: datos.paidByUserId, householdId: ctx.hogar.id },
-            },
-            select: { userId: true },
-          })
-        )?.userId
-      : ctx.user.id;
+    // Por defecto se atribuye a quien responde por el crédito, no a quien la
+    // registra: en la práctica siempre la paga la misma persona.
+    const paidByUserId = await miembroValido(
+      ctx.hogar.id,
+      datos.paidByUserId,
+      credito.paidByUserId,
+    );
     if (!paidByUserId) return fallo("Esa persona no es miembro de este hogar.");
 
     await prisma.$transaction(async (tx) => {
@@ -247,6 +255,20 @@ export async function pagarCuota(entrada: unknown): Promise<Resultado> {
   } catch (e) {
     return comoFallo(e);
   }
+}
+
+/** Un crédito o una cuota solo pueden atribuirse a alguien que viva en el hogar. */
+async function miembroValido(
+  householdId: string,
+  candidato: string | undefined,
+  porDefecto: string,
+): Promise<string | null> {
+  if (!candidato || candidato === porDefecto) return porDefecto;
+  const membresia = await prisma.householdMember.findUnique({
+    where: { userId_householdId: { userId: candidato, householdId } },
+    select: { userId: true },
+  });
+  return membresia?.userId ?? null;
 }
 
 export async function eliminarCredito(id: string): Promise<Resultado> {

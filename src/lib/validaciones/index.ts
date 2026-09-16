@@ -120,6 +120,7 @@ export const creditoSchema = z.object({
   totalInstallments: z.number().int().min(1, "Mínimo 1 cuota").max(600),
   installmentAmount: montoSchema,
   startDate: fechaISOSchema,
+  paidByUserId: z.string().optional().or(z.literal("")),
 });
 
 export const pagoCuotaSchema = z.object({

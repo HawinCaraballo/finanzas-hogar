@@ -115,7 +115,8 @@ function FormularioPago({
       amount: credito.installmentAmount,
       date: aFechaISO(new Date()),
       notas: "",
-      paidByUserId: usuarioActualId,
+      // Por defecto, quien responde por el crédito, no quien registra la cuota.
+      paidByUserId: credito.responsable.id,
     },
   });
 
@@ -163,7 +164,7 @@ function FormularioPago({
         <Campo
           etiqueta="¿Quién pagó la cuota?"
           htmlFor="pagador-cuota"
-          ayuda="En cuya cuenta individual entra este gasto."
+          ayuda={`Por defecto, ${credito.responsable.nombre}, que es quien responde por el crédito.`}
           error={errors.paidByUserId?.message}
         >
           <Seleccion id="pagador-cuota" {...register("paidByUserId")}>

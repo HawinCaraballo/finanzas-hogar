@@ -16,16 +16,25 @@ import { Dialogo, DialogoContenido } from "@/components/ui/dialog";
 import { Barra, EstadoVacio, Insignia } from "@/components/ui/varios";
 import { cuotaFrancesa } from "@/lib/creditos";
 import { aFechaISO, fechaLegible } from "@/lib/periodo";
-import { ETIQUETA_CREDITO, type CategoriaVista, type CreditoConResumen } from "@/lib/tipos";
+import {
+  ETIQUETA_CREDITO,
+  type CategoriaVista,
+  type CreditoConResumen,
+  type MiembroVista,
+} from "@/lib/tipos";
 import { creditoSchema, type CreditoInput } from "@/lib/validaciones";
 import { guardarCredito } from "@/server/creditos";
 
 export function GestorCreditos({
   creditos,
   categorias,
+  miembros,
+  usuarioActualId,
 }: {
   creditos: CreditoConResumen[];
   categorias: CategoriaVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
 }) {
   const router = useRouter();
   const [editando, setEditando] = useState<CreditoConResumen | "nuevo" | null>(null);
@@ -54,7 +63,7 @@ export function GestorCreditos({
             <section className="space-y-3">
               <h2 className="text-sm font-semibold text-texto">Activos</h2>
               {activos.map((c) => (
-                <TarjetaCredito key={c.id} credito={c} />
+                <TarjetaCredito key={c.id} credito={c} mostrarResponsable={miembros.length > 1} />
               ))}
             </section>
           )}
@@ -63,7 +72,7 @@ export function GestorCreditos({
             <section className="space-y-3">
               <h2 className="text-sm font-semibold text-texto">Pagados</h2>
               {pagados.map((c) => (
-                <TarjetaCredito key={c.id} credito={c} />
+                <TarjetaCredito key={c.id} credito={c} mostrarResponsable={miembros.length > 1} />
               ))}
             </section>
           )}
@@ -78,6 +87,8 @@ export function GestorCreditos({
           >
             <FormularioCredito
               categorias={categorias}
+              miembros={miembros}
+              usuarioActualId={usuarioActualId}
               credito={editando === "nuevo" ? undefined : editando}
               onListo={() => {
                 setEditando(null);
@@ -91,7 +102,13 @@ export function GestorCreditos({
   );
 }
 
-function TarjetaCredito({ credito: c }: { credito: CreditoConResumen }) {
+function TarjetaCredito({
+  credito: c,
+  mostrarResponsable,
+}: {
+  credito: CreditoConResumen;
+  mostrarResponsable: boolean;
+}) {
   const moneda = useMoneda();
 
   return (
@@ -108,6 +125,7 @@ function TarjetaCredito({ credito: c }: { credito: CreditoConResumen }) {
             <p className="mt-0.5 text-xs text-texto-suave">
               Cuota {moneda.format(c.installmentAmount)} · {c.resumen.cuotasPagadas} de{" "}
               {c.totalInstallments} pagadas
+              {mostrarResponsable && ` · paga ${c.responsable.nombre}`}
             </p>
           </div>
 
@@ -142,10 +160,14 @@ function TarjetaCredito({ credito: c }: { credito: CreditoConResumen }) {
 
 function FormularioCredito({
   categorias,
+  miembros,
+  usuarioActualId,
   credito,
   onListo,
 }: {
   categorias: CategoriaVista[];
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   credito?: CreditoConResumen;
   onListo: () => void;
 }) {
@@ -170,6 +192,7 @@ function FormularioCredito({
           totalInstallments: credito.totalInstallments,
           installmentAmount: credito.installmentAmount,
           startDate: credito.fechaInicio,
+          paidByUserId: credito.responsable.id,
         }
       : {
           nombre: "",
@@ -180,6 +203,7 @@ function FormularioCredito({
           totalInstallments: 12,
           installmentAmount: 0,
           startDate: aFechaISO(new Date()),
+          paidByUserId: usuarioActualId,
         },
   });
 
@@ -238,6 +262,27 @@ function FormularioCredito({
           </Seleccion>
         </Campo>
       </div>
+
+      {/*
+        El responsable del crédito. Cada cuota se le atribuye por defecto, que
+        es lo que pasa en la vida real: siempre la paga la misma persona.
+      */}
+      {miembros.length > 1 && (
+        <Campo
+          etiqueta="¿Quién lo paga?"
+          htmlFor="responsable-cred"
+          ayuda="En cuya cuenta individual entrarán las cuotas."
+          error={errors.paidByUserId?.message}
+        >
+          <Seleccion id="responsable-cred" {...register("paidByUserId")}>
+            {miembros.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.id === usuarioActualId ? `${m.nombre} (yo)` : m.nombre}
+              </option>
+            ))}
+          </Seleccion>
+        </Campo>
+      )}
 
       <Campo
         etiqueta="Monto prestado"
