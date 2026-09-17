@@ -145,6 +145,7 @@ async function main() {
     data: {
       householdId: hogar.id,
       categoryId: catCuota.id,
+      paidByUserId: usuarios[0].id,
       nombre: "Crédito de libre inversión",
       kind: "CREDITO",
       principal: 12_000_000,

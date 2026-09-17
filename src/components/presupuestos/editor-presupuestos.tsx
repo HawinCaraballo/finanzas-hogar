@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Check, Pencil, X } from "lucide-react";
+import { Copy, Check, Pencil, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -14,7 +14,11 @@ import type { Periodo } from "@/lib/periodo";
 import { COLOR_ESTADO, TEXTO_ESTADO } from "@/lib/presupuesto";
 import type { PresupuestoVista } from "@/lib/tipos";
 import { cn } from "@/lib/utils";
-import { copiarDelMesAnterior, guardarPresupuesto } from "@/server/presupuestos";
+import {
+  copiarDelMesAnterior,
+  eliminarPresupuesto,
+  guardarPresupuesto,
+} from "@/server/presupuestos";
 
 /**
  * Edición en la misma lista: se toca el lápiz, se escribe el tope y se guarda.
@@ -117,7 +121,22 @@ function FilaPresupuesto({
   const [editando, setEditando] = useState(false);
   const [texto, setTexto] = useState(p.tope > 0 ? moneda.formatNumero(p.tope) : "");
   const [guardando, setGuardando] = useState(false);
+  const [borrando, setBorrando] = useState(false);
   const Icono = iconoPorNombre(p.icon);
+
+  async function borrar() {
+    setBorrando(true);
+    const res = await eliminarPresupuesto(p.categoryId, periodo);
+    setBorrando(false);
+    if (!res.ok) {
+      toast.error(res.error);
+      return;
+    }
+    toast.success(`Se quitó el tope de ${p.nombre}.`);
+    setTexto("");
+    setEditando(false);
+    router.refresh();
+  }
 
   async function guardar() {
     const monto = texto.trim() === "" ? 0 : moneda.parse(texto);
@@ -210,10 +229,21 @@ function FilaPresupuesto({
               variante="fantasma"
               tamano="iconoSm"
               onClick={() => setEditando(true)}
-              aria-label={`Fijar tope de ${p.nombre}`}
+              aria-label={`${p.tope > 0 ? "Editar" : "Fijar"} tope de ${p.nombre}`}
             >
               <Pencil aria-hidden />
             </Boton>
+            {p.tope > 0 && (
+              <Boton
+                variante="fantasma"
+                tamano="iconoSm"
+                onClick={borrar}
+                cargando={borrando}
+                aria-label={`Quitar el tope de ${p.nombre}`}
+              >
+                <Trash2 className="text-egreso" aria-hidden />
+              </Boton>
+            )}
           </div>
         )}
       </div>

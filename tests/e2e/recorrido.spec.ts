@@ -214,3 +214,24 @@ test("se puede registrar un gasto sin descripción", async ({ page }) => {
   await expect(fila).toContainText("Mercado");
   await expect(fila).toContainText("pagó");
 });
+
+test("un presupuesto se puede quitar", async ({ page }) => {
+  await crearCuentaYHogar(page, "Hogar que quita topes");
+
+  await page.goto("/presupuestos");
+  await page.getByRole("button", { name: "Fijar tope de Mercado" }).click();
+  await page.getByLabel("Tope de Mercado").fill("500000");
+  await page.getByRole("button", { name: "Guardar tope" }).click();
+
+  // Con tope puesto, la fila sube a la sección "Con tope".
+  const conTope = page.locator("section").filter({ hasText: "Con tope" });
+  await expect(conTope.getByText("Mercado")).toBeVisible();
+
+  await page.getByRole("button", { name: "Quitar el tope de Mercado" }).click();
+
+  // Y al quitarlo baja a "Sin tope", sin rastro del monto.
+  await expect(page.getByRole("button", { name: "Quitar el tope de Mercado" })).toBeHidden();
+  const sinTope = page.locator("section").filter({ hasText: "Sin tope" });
+  await expect(sinTope.getByText("Mercado")).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("500.000");
+});

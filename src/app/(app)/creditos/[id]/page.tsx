@@ -14,13 +14,19 @@ import {
 import { Barra, EstadoVacio, Insignia } from "@/components/ui/varios";
 import { fechaLegible } from "@/lib/periodo";
 import { ETIQUETA_CREDITO } from "@/lib/tipos";
+import { requireHogar } from "@/lib/auth/guard";
 import { creditoConPagos } from "@/server/creditos";
+import { miembrosDelHogar } from "@/server/hogares";
 
 export const metadata: Metadata = { title: "Detalle del crédito" };
 
 export default async function PaginaCredito({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const datos = await creditoConPagos(id);
+  const [ctx, datos, miembros] = await Promise.all([
+    requireHogar(),
+    creditoConPagos(id),
+    miembrosDelHogar(),
+  ]);
   if (!datos) notFound();
 
   const { credito, pagos } = datos;
@@ -53,10 +59,11 @@ export default async function PaginaCredito({ params }: { params: Promise<{ id: 
         <p className="text-sm text-texto-suave">
           {r.cuotasPagadas} de {credito.totalInstallments} cuotas ·{" "}
           <MontoServidor valor={credito.installmentAmount} /> cada una
+          {miembros.length > 1 && ` · paga ${credito.responsable.nombre}`}
         </p>
       </header>
 
-      <AccionesCredito credito={credito} />
+      <AccionesCredito credito={credito} miembros={miembros} usuarioActualId={ctx.user.id} />
 
       <Tarjeta>
         <TarjetaContenido className="pt-4 sm:pt-5">

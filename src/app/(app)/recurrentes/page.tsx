@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { GestorRecurrentes } from "@/components/recurrentes/gestor-recurrentes";
+import { requireHogar } from "@/lib/auth/guard";
+import { miembrosDelHogar } from "@/server/hogares";
 import { categoriasDelHogar } from "@/server/movimientos";
 import { listarRecurrentes } from "@/server/recurrentes";
 
@@ -9,7 +11,12 @@ export const metadata: Metadata = { title: "Recurrentes" };
 export const dynamic = "force-dynamic";
 
 export default async function PaginaRecurrentes() {
-  const [reglas, categorias] = await Promise.all([listarRecurrentes(), categoriasDelHogar()]);
+  const ctx = await requireHogar();
+  const [reglas, categorias, miembros] = await Promise.all([
+    listarRecurrentes(),
+    categoriasDelHogar(),
+    miembrosDelHogar(),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -20,7 +27,12 @@ export default async function PaginaRecurrentes() {
         </p>
       </header>
 
-      <GestorRecurrentes reglas={reglas} categorias={categorias} />
+      <GestorRecurrentes
+        reglas={reglas}
+        categorias={categorias}
+        miembros={miembros}
+        usuarioActualId={ctx.user.id}
+      />
     </div>
   );
 }

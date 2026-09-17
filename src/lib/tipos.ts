@@ -39,6 +39,8 @@ export type CreditoVista = {
   fechaInicio: string;
   categoryId: string;
   activo: boolean;
+  /** Quién paga las cuotas. Cada pago se le atribuye por defecto. */
+  responsable: { id: string; nombre: string };
 };
 
 export type FiltrosMovimientos = {

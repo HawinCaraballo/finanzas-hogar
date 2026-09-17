@@ -5,6 +5,10 @@ const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
+  // Los 30 s por defecto se quedan cortos: varios recorridos montan dos cuentas
+  // y un hogar antes de llegar a lo que prueban, y en una máquina cargada eso
+  // agota el presupuesto antes de tiempo. No es lentitud de la app.
+  timeout: 60_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,

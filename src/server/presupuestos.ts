@@ -133,6 +133,33 @@ export async function copiarDelMesAnterior(periodo: Periodo): Promise<Resultado<
   }
 }
 
+/**
+ * Quita el tope de una categoría. Guardar un monto de cero produce el mismo
+ * efecto, pero eso es un detalle de implementación: borrar merece una acción
+ * con nombre propio, y así la interfaz puede ofrecer un botón claro.
+ */
+export async function eliminarPresupuesto(
+  categoryId: string,
+  periodo: Periodo,
+): Promise<Resultado> {
+  try {
+    const ctx = await requireHogar();
+    const { count } = await prisma.budget.deleteMany({
+      where: {
+        householdId: ctx.hogar.id,
+        categoryId,
+        year: periodo.year,
+        month: periodo.month,
+      },
+    });
+    if (count === 0) return fallo("Ese presupuesto ya no existe.");
+    revalidar();
+    return exito();
+  } catch (e) {
+    return comoFallo(e);
+  }
+}
+
 export async function borrarPresupuestosDelMes(periodo: Periodo): Promise<Resultado> {
   try {
     const ctx = await requireHogar();

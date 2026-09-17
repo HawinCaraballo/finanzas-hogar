@@ -59,6 +59,7 @@ model User {
   // ...y aquellos cuyo dinero puso o recibió, que no siempre son los mismos.
   movimientosPagados Transaction[]     @relation("MovimientosPagados")
   reglasPagadas      RecurringRule[]   @relation("ReglasPagadas")
+  creditosPagados    Loan[]            @relation("CreditosPagados")
 }
 
 model Household {
@@ -214,6 +215,9 @@ model Loan {
   id                String     @id @default(cuid())
   householdId       String
   categoryId        String
+  // Quién responde por el crédito. Cada cuota se atribuye a esta persona por
+  // defecto: en la práctica siempre la paga la misma.
+  paidByUserId      String
   nombre            String
   kind              LoanKind   @default(CREDITO)
   principal         Decimal    @db.Decimal(14, 2)
@@ -225,9 +229,11 @@ model Loan {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 
-  household Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  categoria Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  pagos     Transaction[]
+  household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  categoria   Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  responsable User          @relation("CreditosPagados", fields: [paidByUserId], references: [id], onDelete: Restrict)
+  pagos       Transaction[]
 
   @@index([householdId, status])
+  @@index([householdId, paidByUserId])
 }

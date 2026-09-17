@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { GestorCreditos } from "@/components/creditos/gestor-creditos";
+import { requireHogar } from "@/lib/auth/guard";
 import { listarCreditos } from "@/server/creditos";
+import { miembrosDelHogar } from "@/server/hogares";
 import { categoriasDelHogar } from "@/server/movimientos";
 
 export const metadata: Metadata = { title: "Créditos" };
 
 export default async function PaginaCreditos() {
-  const [creditos, categorias] = await Promise.all([listarCreditos(), categoriasDelHogar()]);
+  const ctx = await requireHogar();
+  const [creditos, categorias, miembros] = await Promise.all([
+    listarCreditos(),
+    categoriasDelHogar(),
+    miembrosDelHogar(),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -17,7 +24,12 @@ export default async function PaginaCreditos() {
         </p>
       </header>
 
-      <GestorCreditos creditos={creditos} categorias={categorias} />
+      <GestorCreditos
+        creditos={creditos}
+        categorias={categorias}
+        miembros={miembros}
+        usuarioActualId={ctx.user.id}
+      />
     </div>
   );
 }

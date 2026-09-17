@@ -9,10 +9,10 @@ import { toast } from "sonner";
 import { useMoneda } from "@/components/moneda-provider";
 import { CampoMonto } from "@/components/movimientos/campo-monto";
 import { Boton } from "@/components/ui/button";
-import { Campo, AreaTexto, Entrada } from "@/components/ui/campos";
+import { Campo, AreaTexto, Entrada, Seleccion } from "@/components/ui/campos";
 import { Dialogo, DialogoContenido } from "@/components/ui/dialog";
 import { aFechaISO } from "@/lib/periodo";
-import type { CreditoConResumen } from "@/lib/tipos";
+import type { CreditoConResumen, MiembroVista } from "@/lib/tipos";
 import { pagoCuotaSchema } from "@/lib/validaciones";
 import { eliminarCredito, pagarCuota, reabrirCredito } from "@/server/creditos";
 import type { z } from "zod";
@@ -20,7 +20,15 @@ import type { z } from "zod";
 type PagoInput = z.infer<typeof pagoCuotaSchema>;
 
 /** Acciones del detalle: registrar una cuota, reabrir o eliminar el crédito. */
-export function AccionesCredito({ credito }: { credito: CreditoConResumen }) {
+export function AccionesCredito({
+  credito,
+  miembros,
+  usuarioActualId,
+}: {
+  credito: CreditoConResumen;
+  miembros: MiembroVista[];
+  usuarioActualId: string;
+}) {
   const router = useRouter();
   const [pagando, setPagando] = useState(false);
 
@@ -68,6 +76,8 @@ export function AccionesCredito({ credito }: { credito: CreditoConResumen }) {
           >
             <FormularioPago
               credito={credito}
+              miembros={miembros}
+              usuarioActualId={usuarioActualId}
               onListo={() => {
                 setPagando(false);
                 router.refresh();
@@ -82,9 +92,13 @@ export function AccionesCredito({ credito }: { credito: CreditoConResumen }) {
 
 function FormularioPago({
   credito,
+  miembros,
+  usuarioActualId,
   onListo,
 }: {
   credito: CreditoConResumen;
+  miembros: MiembroVista[];
+  usuarioActualId: string;
   onListo: () => void;
 }) {
   const moneda = useMoneda();
@@ -101,6 +115,8 @@ function FormularioPago({
       amount: credito.installmentAmount,
       date: aFechaISO(new Date()),
       notas: "",
+      // Por defecto, quien responde por el crédito, no quien registra la cuota.
+      paidByUserId: credito.responsable.id,
     },
   });
 
@@ -142,6 +158,24 @@ function FormularioPago({
       <Campo etiqueta="Fecha" htmlFor="fecha-cuota" error={errors.date?.message}>
         <Entrada id="fecha-cuota" type="date" {...register("date")} />
       </Campo>
+
+      {/* La cuota la puede registrar alguien distinto de quien la pagó. */}
+      {miembros.length > 1 && (
+        <Campo
+          etiqueta="¿Quién pagó la cuota?"
+          htmlFor="pagador-cuota"
+          ayuda={`Por defecto, ${credito.responsable.nombre}, que es quien responde por el crédito.`}
+          error={errors.paidByUserId?.message}
+        >
+          <Seleccion id="pagador-cuota" {...register("paidByUserId")}>
+            {miembros.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.id === usuarioActualId ? `${m.nombre} (yo)` : m.nombre}
+              </option>
+            ))}
+          </Seleccion>
+        </Campo>
+      )}
 
       <Campo etiqueta="Notas" htmlFor="notas-cuota">
         <AreaTexto id="notas-cuota" placeholder="Opcional" {...register("notas")} />
