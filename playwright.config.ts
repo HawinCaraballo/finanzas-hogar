@@ -5,9 +5,13 @@ const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
-  // Los 30 s por defecto se quedan cortos: varios recorridos montan dos cuentas
-  // y un hogar antes de llegar a lo que prueban, y en una máquina cargada eso
-  // agota el presupuesto antes de tiempo. No es lentitud de la app.
+  // Varios recorridos montan dos cuentas y un hogar antes de llegar a lo que
+  // prueban, y eso no cabe en los 30 s por defecto en una máquina cargada.
+  //
+  // Ojo: subir esto NO arregla inestabilidad. Se subió una vez creyendo que un
+  // fallo intermitente era lentitud, y resultó ser una carrera con las cookies
+  // de sesión (ver salirDeLaSesion en tests/e2e/ayudas.ts). Si una prueba falla
+  // de forma intermitente, la causa está en otro sitio.
   timeout: 60_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

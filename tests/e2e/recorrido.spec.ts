@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { abrirRegistro, salirDeLaSesion } from "./ayudas";
 
 /**
  * Recorrido completo de la aplicación: crear cuenta y hogar, registrar un
@@ -18,7 +19,7 @@ function correoUnico(prefijo: string): string {
 async function crearCuentaYHogar(page: Page, nombreHogar: string) {
   const email = correoUnico("e2e");
 
-  await page.goto("/registro");
+  await abrirRegistro(page);
   await page.getByLabel("Nombre").fill("Persona de prueba");
   await page.getByLabel("Correo").fill(email);
   await page.getByLabel("Contraseña", { exact: true }).fill(CLAVE);
@@ -141,7 +142,7 @@ test("cada hogar ve solo sus propios movimientos", async ({ page, context }) => 
   });
 
   // Segunda persona, sin relación con el primer hogar.
-  await context.clearCookies();
+  await salirDeLaSesion(page, context);
   await crearCuentaYHogar(page, "Hogar B");
 
   await page.goto("/movimientos");

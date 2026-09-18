@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type BrowserContext, type Page } from "@playwright/test";
+import { abrirRegistro, salirDeLaSesion } from "./ayudas";
 
 /**
  * La garantía de esta funcionalidad: cada movimiento pertenece a una persona y
@@ -17,7 +18,7 @@ function correoUnico(prefijo: string): string {
 
 async function registrarCuenta(page: Page, nombre: string): Promise<string> {
   const email = correoUnico("cuentas");
-  await page.goto("/registro");
+  await abrirRegistro(page);
   await page.getByLabel("Nombre").fill(nombre);
   await page.getByLabel("Correo").fill(email);
   await page.getByLabel("Contraseña", { exact: true }).fill(CLAVE);
@@ -98,7 +99,7 @@ test("el hogar es la suma de las cuentas individuales", async ({ page, context }
   expect(enlace).toContain("/invitacion/");
 
   // --- Luis entra por el enlace y aporta 1.000.000 ---
-  await context.clearCookies();
+  await salirDeLaSesion(page, context);
   await registrarCuenta(page, "Luis Prueba");
   await page.goto(new URL(enlace).pathname);
   await page.getByRole("button", { name: "Unirme al hogar" }).click();
@@ -139,7 +140,7 @@ test("un movimiento se puede atribuir a otra persona del hogar", async ({ page, 
   await crearHogar(page, "Hogar de atribución");
   const enlace = await invitar(page);
 
-  await context.clearCookies();
+  await salirDeLaSesion(page, context);
   await registrarCuenta(page, "Luis Recibe");
   await page.goto(new URL(enlace).pathname);
   await page.getByRole("button", { name: "Unirme al hogar" }).click();
@@ -175,7 +176,7 @@ test("un movimiento se puede atribuir a otra persona del hogar", async ({ page, 
  */
 async function hogarConDosPersonas(
   page: Page,
-  context: { clearCookies: () => Promise<void> },
+  context: BrowserContext,
   nombreHogar: string,
 ): Promise<string> {
   const primera = "Ana Titular";
@@ -183,7 +184,7 @@ async function hogarConDosPersonas(
   await crearHogar(page, nombreHogar);
   const enlace = await invitar(page);
 
-  await context.clearCookies();
+  await salirDeLaSesion(page, context);
   await registrarCuenta(page, "Luis Segundo");
   await page.goto(new URL(enlace).pathname);
   await page.getByRole("button", { name: "Unirme al hogar" }).click();
@@ -323,6 +324,9 @@ test("una regla recurrente personal genera movimientos personales", async ({
   await expect(fila).toContainText("Personal");
 
   await fila.getByRole("button", { name: "Registrar" }).click();
+  // El clic vuelve antes de que termine la Server Action: sin esperar al aviso,
+  // la navegación siguiente puede adelantarse a la creación del movimiento.
+  await expect(page.getByText("Movimiento registrado.")).toBeVisible();
 
   // El movimiento que generó hereda el carácter personal de la regla.
   await page.goto("/movimientos?ambito=PERSONAL");
