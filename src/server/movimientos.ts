@@ -85,6 +85,8 @@ function construirWhere(householdId: string, f: FiltrosMovimientos): Prisma.Tran
   if (f.type && f.type !== "TODOS") where.type = f.type;
   if (f.categoryId) where.categoryId = f.categoryId;
   if (f.paidByUserId) where.paidByUserId = f.paidByUserId;
+  if (f.ambito === "HOGAR") where.esPersonal = false;
+  if (f.ambito === "PERSONAL") where.esPersonal = true;
   if (f.texto?.trim()) {
     const texto = f.texto.trim();
     where.OR = [
@@ -116,6 +118,7 @@ function aVista(t: FilaConRelaciones): MovimientoVista {
     responsable: t.responsable,
     loanId: t.loanId,
     esRecurrente: t.recurringRuleId !== null,
+    esPersonal: t.esPersonal,
   };
 }
 
@@ -142,6 +145,7 @@ export async function crearMovimiento(entrada: unknown): Promise<Resultado> {
         date: parseFechaISO(datos.date),
         descripcion: datos.descripcion ?? "",
         notas: datos.notas || null,
+        esPersonal: datos.esPersonal ?? false,
         loanId: await creditoValido(ctx.hogar.id, datos.loanId),
       },
     });
@@ -184,6 +188,7 @@ export async function actualizarMovimiento(entrada: unknown): Promise<Resultado>
         date: parseFechaISO(datos.date),
         descripcion: datos.descripcion ?? "",
         notas: datos.notas || null,
+        esPersonal: datos.esPersonal ?? false,
         loanId: await creditoValido(ctx.hogar.id, datos.loanId),
       },
     });

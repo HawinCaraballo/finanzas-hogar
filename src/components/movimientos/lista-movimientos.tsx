@@ -2,7 +2,7 @@
 
 import { Repeat, Wallet } from "lucide-react";
 import { useMoneda } from "@/components/moneda-provider";
-import { EstadoVacio } from "@/components/ui/varios";
+import { EstadoVacio, Insignia } from "@/components/ui/varios";
 import { iconoPorNombre } from "@/lib/iconos";
 import { fechaLegible } from "@/lib/periodo";
 import type { MovimientoVista } from "@/lib/tipos";
@@ -117,6 +117,9 @@ function Fila({
             </span>
             {movimiento.esRecurrente && (
               <Repeat className="size-3 shrink-0 text-texto-suave" aria-label="Movimiento recurrente" />
+            )}
+            {movimiento.esPersonal && (
+              <Insignia className="shrink-0">Personal</Insignia>
             )}
           </span>
           <span className="block truncate text-xs text-texto-suave">

@@ -243,3 +243,58 @@ test("un crédito se asigna a una persona y sus cuotas la heredan", async ({ pag
   const pagos = page.locator("li").filter({ hasText: "cuota 1 de 12" });
   await expect(pagos).toContainText(`pagó ${otra}`);
 });
+
+test("un gasto personal queda fuera del hogar pero dentro de tu cuenta", async ({
+  page,
+  context,
+}) => {
+  const otra = await hogarConDosPersonas(page, context, "Hogar con personales");
+
+  // Un gasto normal del hogar y otro marcado como personal, ambos de Luis.
+  await registrarMovimiento(page, {
+    tipo: "Gasto",
+    monto: "300000",
+    categoria: "Mercado",
+    descripcion: "Mercado compartido",
+  });
+
+  await page.getByRole("button", { name: "Registrar movimiento" }).first().click();
+  const dialogo = page.getByRole("dialog");
+  await dialogo.getByLabel("Monto").fill("120000");
+  await dialogo.getByRole("button", { name: "Ropa", exact: true }).click();
+  await dialogo.getByLabel("Descripción").fill("Camisa mía");
+  await dialogo.getByLabel("Gasto personal").check();
+  await dialogo.getByRole("button", { name: "Registrar gasto" }).click();
+  await expect(dialogo).toBeHidden();
+
+  // La lista lo muestra a todos, marcado.
+  await page.goto("/movimientos");
+  const fila = page.locator("li").filter({ hasText: "Camisa mía" });
+  await expect(fila).toContainText("Personal");
+
+  // El hogar no lo cuenta, y avisa de que lo está dejando fuera.
+  await page.goto("/dashboard");
+  await expect(page.locator("body")).toContainText("300.000");
+  await expect(page.locator("body")).not.toContainText("120.000");
+  await expect(page.locator("body")).toContainText("movimiento personal");
+
+  // Pero tu cuenta individual sí lo incluye.
+  await verCuentaDe(page, "Luis Segundo (yo)");
+  await expect(page.locator("body")).toContainText("120.000");
+
+  // Y el filtro de la lista los separa.
+  await page.goto("/movimientos?ambito=HOGAR");
+  await expect(page.getByText("Camisa mía")).toBeHidden();
+  await expect(page.getByText("Mercado compartido")).toBeVisible();
+
+  await page.goto("/movimientos?ambito=PERSONAL");
+  await expect(page.getByText("Camisa mía")).toBeVisible();
+  await expect(page.getByText("Mercado compartido")).toBeHidden();
+
+  // La comparativa de reportes es solo del hogar; lo personal va en su columna.
+  await page.goto("/reportes");
+  const tabla = page.getByRole("table");
+  await expect(tabla.getByRole("row", { name: /Todo el hogar/ })).toContainText("300.000");
+  await expect(tabla).toContainText("Personal");
+  expect(otra).toBeTruthy();
+});

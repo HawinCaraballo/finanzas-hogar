@@ -1,7 +1,7 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
-import { esPersona, filtroPagador, type Alcance } from "@/lib/alcance";
+import { esPersona, filtroAlcance, SOLO_DEL_HOGAR, type Alcance } from "@/lib/alcance";
 import { requireHogar } from "@/lib/auth/guard";
 import { resumenCredito, fechaCuota } from "@/lib/creditos";
 import { aNumero, prisma } from "@/lib/db";
@@ -30,14 +30,14 @@ export async function resumenDelMes(periodo: Periodo, alcance: Alcance): Promise
   const ctx = await requireHogar();
   const actual = rangoDelMes(periodo);
   const previo = rangoDelMes(mesAnterior(periodo));
-  const dePersona = filtroPagador(alcance);
+  const delAlcance = filtroAlcance(alcance);
 
-  const [sumasActual, sumasPrevio, cantidad] = await Promise.all([
+  const [sumasActual, sumasPrevio, cantidad, personalesExcluidos] = await Promise.all([
     prisma.transaction.groupBy({
       by: ["type"],
       where: {
         householdId: ctx.hogar.id,
-        ...dePersona,
+        ...delAlcance,
         date: { gte: actual.desde, lt: actual.hasta },
       },
       _sum: { amount: true },
@@ -46,7 +46,7 @@ export async function resumenDelMes(periodo: Periodo, alcance: Alcance): Promise
       by: ["type"],
       where: {
         householdId: ctx.hogar.id,
-        ...dePersona,
+        ...delAlcance,
         date: { gte: previo.desde, lt: previo.hasta },
       },
       _sum: { amount: true },
@@ -54,10 +54,21 @@ export async function resumenDelMes(periodo: Periodo, alcance: Alcance): Promise
     prisma.transaction.count({
       where: {
         householdId: ctx.hogar.id,
-        ...dePersona,
+        ...delAlcance,
         date: { gte: actual.desde, lt: actual.hasta },
       },
     }),
+    // Solo tiene sentido avisar cuando se está mirando el hogar completo: en
+    // la vista de una persona lo personal sí está incluido.
+    esPersona(alcance)
+      ? Promise.resolve(0)
+      : prisma.transaction.count({
+          where: {
+            householdId: ctx.hogar.id,
+            esPersonal: true,
+            date: { gte: actual.desde, lt: actual.hasta },
+          },
+        }),
   ]);
 
   const leer = (filas: typeof sumasActual, tipo: "INGRESO" | "EGRESO") =>
@@ -76,6 +87,7 @@ export async function resumenDelMes(periodo: Periodo, alcance: Alcance): Promise
     egresosPrevios,
     balancePrevio: ingresosPrevios - egresosPrevios,
     cantidadMovimientos: cantidad,
+    personalesExcluidos,
   };
 }
 
@@ -96,9 +108,9 @@ export async function serieMensual(
 
   // Un fragmento parametrizado, no texto interpolado: el id sigue viajando
   // como parámetro y no hay forma de inyectar SQL por la URL.
-  const soloPersona = esPersona(alcance)
+  const delAlcance = esPersona(alcance)
     ? Prisma.sql`AND "paidByUserId" = ${alcance.userId}`
-    : Prisma.empty;
+    : Prisma.sql`AND "esPersonal" = false`;
 
   const filas = await prisma.$queryRaw<
     Array<{ periodo: string; type: string; total: number }>
@@ -110,7 +122,7 @@ export async function serieMensual(
     WHERE "householdId" = ${ctx.hogar.id}
       AND "date" >= ${desde}
       AND "date" < ${hasta}
-      ${soloPersona}
+      ${delAlcance}
     GROUP BY 1, 2
   `;
 
@@ -147,7 +159,7 @@ export async function gastosPorCategoria(
     by: ["categoryId"],
     where: {
       householdId: ctx.hogar.id,
-      ...filtroPagador(alcance),
+      ...filtroAlcance(alcance),
       type: "EGRESO",
       date: { gte: desde, lt: hasta },
     },
@@ -193,6 +205,8 @@ export async function presupuestosDelMes(periodo: Periodo): Promise<PresupuestoV
     by: ["categoryId"],
     where: {
       householdId: ctx.hogar.id,
+      // Un tope es del hogar: un gasto personal no lo consume.
+      ...SOLO_DEL_HOGAR,
       type: "EGRESO",
       date: { gte: desde, lt: hasta },
       categoryId: { in: presupuestos.map((p) => p.categoryId) },
@@ -282,7 +296,7 @@ export async function ultimosMovimientos(
 ): Promise<MovimientoVista[]> {
   const ctx = await requireHogar();
   const filas = await prisma.transaction.findMany({
-    where: { householdId: ctx.hogar.id, ...filtroPagador(alcance) },
+    where: { householdId: ctx.hogar.id, ...filtroAlcance(alcance) },
     include: {
       categoria: { select: { id: true, nombre: true, icon: true, color: true } },
       autor: { select: { id: true, nombre: true } },
@@ -304,5 +318,6 @@ export async function ultimosMovimientos(
     responsable: t.responsable,
     loanId: t.loanId,
     esRecurrente: t.recurringRuleId !== null,
+    esPersonal: t.esPersonal,
   }));
 }

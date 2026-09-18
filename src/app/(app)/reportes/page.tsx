@@ -69,7 +69,7 @@ export default async function PaginaReportes({
               <div>
                 <TarjetaTitulo>Cuenta de cada quien</TarjetaTitulo>
                 <TarjetaDescripcion>
-                  El total del hogar es la suma exacta de las cuentas individuales
+                  Solo lo compartido: los movimientos personales van aparte
                 </TarjetaDescripcion>
               </div>
             </TarjetaEncabezado>

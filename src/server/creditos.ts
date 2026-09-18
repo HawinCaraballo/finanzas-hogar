@@ -144,6 +144,7 @@ export async function creditoConPagos(id: string): Promise<{
       responsable: p.responsable,
       loanId: p.loanId,
       esRecurrente: p.recurringRuleId !== null,
+      esPersonal: p.esPersonal,
     })),
   };
 }

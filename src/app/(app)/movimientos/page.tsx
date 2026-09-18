@@ -20,6 +20,7 @@ type Busqueda = {
   tipo?: string;
   categoria?: string;
   quien?: string;
+  ambito?: string;
   q?: string;
   pagina?: string;
 };
@@ -40,6 +41,7 @@ export default async function PaginaMovimientos({
   // Se valida contra los miembros del hogar: un id ajeno no debe filtrar nada.
   const alcance = parseAlcance(sp.quien, miembros);
   const quien = esPersona(alcance) ? alcance.userId : "";
+  const ambito = sp.ambito === "HOGAR" || sp.ambito === "PERSONAL" ? sp.ambito : "";
 
   const [categorias, resultado] = await Promise.all([
     categoriasDelHogar(false),
@@ -48,6 +50,7 @@ export default async function PaginaMovimientos({
       type: tipo,
       categoryId: sp.categoria || undefined,
       paidByUserId: quien || undefined,
+      ambito: ambito || undefined,
       texto: sp.q || undefined,
       pagina,
     }),
@@ -58,6 +61,7 @@ export default async function PaginaMovimientos({
     if (tipo !== "TODOS") p.set("tipo", tipo);
     if (sp.categoria) p.set("categoria", sp.categoria);
     if (quien) p.set("quien", quien);
+    if (ambito) p.set("ambito", ambito);
     if (sp.q) p.set("q", sp.q);
     for (const [k, v] of Object.entries(extra)) p.set(k, v);
     return p.toString();
@@ -92,6 +96,7 @@ export default async function PaginaMovimientos({
         tipo={tipo}
         categoryId={sp.categoria ?? ""}
         quien={quien}
+        ambito={ambito}
         texto={sp.q ?? ""}
       />
 
@@ -100,11 +105,11 @@ export default async function PaginaMovimientos({
           movimientos={resultado.movimientos}
           vacio={{
             titulo:
-              sp.q || sp.categoria || quien || tipo !== "TODOS"
+              sp.q || sp.categoria || quien || ambito || tipo !== "TODOS"
                 ? "Nada coincide con estos filtros"
                 : "Este mes todavía está en blanco",
             descripcion:
-              sp.q || sp.categoria || quien || tipo !== "TODOS"
+              sp.q || sp.categoria || quien || ambito || tipo !== "TODOS"
                 ? "Prueba con otros filtros o cambia de mes."
                 : "Registra el primer ingreso o gasto del mes y aparecerá aquí.",
             accion: <BotonRegistrar />,

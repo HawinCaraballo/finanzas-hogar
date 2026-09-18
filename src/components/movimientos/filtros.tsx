@@ -18,6 +18,7 @@ export function FiltrosMovimientos({
   tipo,
   categoryId,
   quien,
+  ambito,
   texto,
 }: {
   categorias: CategoriaVista[];
@@ -26,6 +27,7 @@ export function FiltrosMovimientos({
   tipo: string;
   categoryId: string;
   quien: string;
+  ambito: string;
   texto: string;
 }) {
   const router = useRouter();
@@ -57,7 +59,8 @@ export function FiltrosMovimientos({
   const opciones = categorias.filter(
     (c) => tipo === "TODOS" || c.type === tipo,
   );
-  const hayFiltros = tipo !== "TODOS" || categoryId !== "" || quien !== "" || texto !== "";
+  const hayFiltros =
+    tipo !== "TODOS" || categoryId !== "" || quien !== "" || ambito !== "" || texto !== "";
 
   return (
     <div className="space-y-3">
@@ -137,10 +140,21 @@ export function FiltrosMovimientos({
           </Seleccion>
         )}
 
+        <Seleccion
+          value={ambito}
+          onChange={(e) => aplicar({ ambito: e.target.value })}
+          aria-label="Del hogar o personal"
+          className="h-9 w-auto min-w-40 text-sm"
+        >
+          <option value="">Del hogar y personales</option>
+          <option value="HOGAR">Solo del hogar</option>
+          <option value="PERSONAL">Solo personales</option>
+        </Seleccion>
+
         {hayFiltros && (
           <button
             type="button"
-            onClick={() => aplicar({ tipo: "", categoria: "", quien: "", q: "" })}
+            onClick={() => aplicar({ tipo: "", categoria: "", quien: "", ambito: "", q: "" })}
             className="flex h-9 items-center gap-1 rounded-app px-2.5 text-xs font-medium text-texto-suave transition-colors hover:bg-superficie-2 hover:text-texto"
           >
             <X className="size-3.5" aria-hidden />
