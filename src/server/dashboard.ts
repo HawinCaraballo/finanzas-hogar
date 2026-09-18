@@ -237,6 +237,9 @@ export async function proximosPagos(dias = 15): Promise<PagoProximo[]> {
       where: {
         householdId: ctx.hogar.id,
         activa: true,
+        // Esta tarjeta es del hogar, así que las reglas personales no entran:
+        // aparecerían como un pago de la casa que la casa no va a pagar.
+        ...SOLO_DEL_HOGAR,
         type: "EGRESO",
         nextRunDate: { lte: limite },
       },

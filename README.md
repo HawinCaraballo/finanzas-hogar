@@ -122,6 +122,11 @@ Esa es toda la regla, y vive en `filtroAlcance`
 ([src/lib/alcance.ts](src/lib/alcance.ts)): el alcance «hogar» filtra por
 `esPersonal: false`, y el de una persona por `paidByUserId`, sin excluir nada suyo.
 
+Una **regla recurrente** también puede ser personal, y entonces todo lo que genere
+—tanto por el cron como por el botón de registrar— nace personal. Las reglas personales
+no aparecen en la tarjeta de próximos pagos del dashboard, que es del hogar: serían un
+pago de la casa que la casa no va a pagar.
+
 De ahí la invariante que prueba
 [tests/e2e/cuentas-individuales.spec.ts](tests/e2e/cuentas-individuales.spec.ts): **entre
 los movimientos del hogar, el total es la suma exacta de las cuentas individuales.** Lo

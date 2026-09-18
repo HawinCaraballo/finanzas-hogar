@@ -152,6 +152,7 @@ function Fila({
             {r.descripcion}
           </span>
           {!r.activa && <Insignia>Pausada</Insignia>}
+          {r.esPersonal && <Insignia>Personal</Insignia>}
           {r.autoPost ? (
             <Insignia tono="marca">
               <Zap className="size-3" aria-hidden />
@@ -239,6 +240,7 @@ function FormularioRecurrente({
           endDate: regla.fechaFin ?? "",
           autoPost: regla.autoPost,
           paidByUserId: regla.responsable.id,
+          esPersonal: regla.esPersonal,
         }
       : {
           type: "EGRESO",
@@ -251,6 +253,7 @@ function FormularioRecurrente({
           endDate: "",
           autoPost: true,
           paidByUserId: usuarioActualId,
+          esPersonal: false,
         },
   });
 
@@ -372,6 +375,23 @@ function FormularioRecurrente({
           <Entrada id="fin-rec" type="date" {...register("endDate")} />
         </Campo>
       </div>
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-app border border-borde p-3">
+        <input
+          type="checkbox"
+          className="mt-0.5 size-4 accent-[var(--marca)]"
+          {...register("esPersonal")}
+        />
+        <span>
+          <span className="block text-sm font-medium text-texto">
+            {tipo === "INGRESO" ? "Ingreso personal" : "Gasto personal"}
+          </span>
+          <span className="block text-xs text-texto-suave">
+            Lo que genere esta regla entrará en la cuenta individual de su responsable,
+            no en los totales del hogar.
+          </span>
+        </span>
+      </label>
 
       <label className="flex cursor-pointer items-start gap-3 rounded-app border border-borde p-3">
         <input

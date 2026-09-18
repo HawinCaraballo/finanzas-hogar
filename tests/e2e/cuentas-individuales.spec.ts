@@ -298,3 +298,37 @@ test("un gasto personal queda fuera del hogar pero dentro de tu cuenta", async (
   await expect(tabla).toContainText("Personal");
   expect(otra).toBeTruthy();
 });
+
+test("una regla recurrente personal genera movimientos personales", async ({
+  page,
+  context,
+}) => {
+  await hogarConDosPersonas(page, context, "Hogar de reglas personales");
+
+  await page.goto("/recurrentes");
+  await page.getByRole("button", { name: "Nueva regla" }).click();
+
+  const dialogo = page.getByRole("dialog");
+  await dialogo.getByLabel("Monto").fill("90000");
+  await dialogo.getByLabel("Descripción").fill("Gimnasio mío");
+  await dialogo.getByLabel("Categoría").selectOption({ label: "Entretenimiento" });
+  await dialogo.getByLabel("Gasto personal").check();
+  // Sin registro automático, la regla queda como recordatorio y aparece el
+  // botón de registrar, que es lo que da un movimiento en el momento.
+  await dialogo.getByLabel("Registrarlo automáticamente").uncheck();
+  await dialogo.getByRole("button", { name: "Crear regla" }).click();
+  await expect(dialogo).toBeHidden();
+
+  const fila = page.locator("li").filter({ hasText: "Gimnasio mío" });
+  await expect(fila).toContainText("Personal");
+
+  await fila.getByRole("button", { name: "Registrar" }).click();
+
+  // El movimiento que generó hereda el carácter personal de la regla.
+  await page.goto("/movimientos?ambito=PERSONAL");
+  await expect(page.getByText("Gimnasio mío")).toBeVisible();
+
+  // Y por tanto no cuenta en el hogar.
+  await page.goto("/dashboard");
+  await expect(page.locator("body")).not.toContainText("90.000");
+});

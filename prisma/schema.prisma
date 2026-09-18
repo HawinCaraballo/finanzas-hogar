@@ -203,6 +203,9 @@ model RecurringRule {
   endDate      DateTime?    @db.Date
   nextRunDate  DateTime     @db.Date
   autoPost     Boolean      @default(true)
+  // Una regla personal genera movimientos personales: cuentan en la cuenta de
+  // su responsable, no en la del hogar.
+  esPersonal   Boolean      @default(false)
   activa       Boolean      @default(true)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt

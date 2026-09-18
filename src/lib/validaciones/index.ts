@@ -109,6 +109,7 @@ export const recurrenteSchema = z.object({
   endDate: fechaISOSchema.optional().or(z.literal("")),
   autoPost: z.boolean(),
   paidByUserId: z.string().optional().or(z.literal("")),
+  esPersonal: z.boolean().optional(),
 });
 
 // --- Créditos ---

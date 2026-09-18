@@ -141,6 +141,8 @@ export type RecurrenteVista = {
   proximaFecha: string;
   autoPost: boolean;
   activa: boolean;
+  /** Los movimientos que genere no contarán en el hogar. */
+  esPersonal: boolean;
   categoria: { id: string; nombre: string; icon: string; color: string };
   responsable: { id: string; nombre: string };
 };
