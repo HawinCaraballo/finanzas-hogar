@@ -1,5 +1,6 @@
 "use server";
 
+import { SOLO_DEL_HOGAR } from "@/lib/alcance";
 import { requireHogar } from "@/lib/auth/guard";
 import { aNumero, prisma } from "@/lib/db";
 import {
@@ -30,15 +31,28 @@ export async function comparativaMiembros(periodo: Periodo): Promise<{
   const ctx = await requireHogar();
   const { desde, hasta } = rangoDelMes(periodo);
 
-  const [membresias, grupos] = await Promise.all([
+  const [membresias, grupos, personales] = await Promise.all([
     prisma.householdMember.findMany({
       where: { householdId: ctx.hogar.id },
       select: { user: { select: { id: true, nombre: true } } },
       orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
     }),
+    // La comparativa es del hogar: si incluyera lo personal de cada quien,
+    // los porcentajes dejarían de ser comparables entre personas.
     prisma.transaction.groupBy({
       by: ["paidByUserId", "type"],
-      where: { householdId: ctx.hogar.id, date: { gte: desde, lt: hasta } },
+      where: { householdId: ctx.hogar.id, ...SOLO_DEL_HOGAR, date: { gte: desde, lt: hasta } },
+      _sum: { amount: true },
+    }),
+    // Lo personal se muestra aparte, y solo lo de quien está mirando.
+    prisma.transaction.groupBy({
+      by: ["type"],
+      where: {
+        householdId: ctx.hogar.id,
+        esPersonal: true,
+        paidByUserId: ctx.user.id,
+        date: { gte: desde, lt: hasta },
+      },
       _sum: { amount: true },
     }),
   ]);
@@ -58,10 +72,18 @@ export async function comparativaMiembros(periodo: Periodo): Promise<{
 
   const totales = totalesDeHogar(base);
 
+  const personalDe = (tipo: "INGRESO" | "EGRESO") =>
+    aNumero(personales.find((p) => p.type === tipo)?._sum.amount);
+  const miPersonalIngresos = personalDe("INGRESO");
+  const miPersonalEgresos = personalDe("EGRESO");
+
   const filas: FilaComparativa[] = ordenarPorAporte(base).map((f) => ({
     ...f,
     participacionIngresos: participacion(f.ingresos, totales.ingresos),
     participacionEgresos: participacion(f.egresos, totales.egresos),
+    // Solo la fila de quien mira lleva su parte personal.
+    personalIngresos: f.userId === ctx.user.id ? miPersonalIngresos : 0,
+    personalEgresos: f.userId === ctx.user.id ? miPersonalEgresos : 0,
   }));
 
   return { filas, totales, miembros };
@@ -90,6 +112,7 @@ export async function serieMensualPorMiembro(
            SUM("amount")::float8 AS total
     FROM "Transaction"
     WHERE "householdId" = ${ctx.hogar.id}
+      AND "esPersonal" = false
       AND "date" >= ${desde}
       AND "date" < ${hasta}
     GROUP BY 1, 2, 3

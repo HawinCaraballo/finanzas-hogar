@@ -73,6 +73,7 @@ export function FormularioMovimiento({
           notas: movimiento.notas ?? "",
           loanId: movimiento.loanId ?? "",
           paidByUserId: movimiento.responsable.id,
+          esPersonal: movimiento.esPersonal,
         }
       : {
           type: tipoInicial,
@@ -83,6 +84,7 @@ export function FormularioMovimiento({
           notas: "",
           loanId: "",
           paidByUserId: usuarioActualId,
+          esPersonal: false,
         },
   });
 
@@ -259,6 +261,23 @@ export function FormularioMovimiento({
           </Seleccion>
         </Campo>
       )}
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-app border border-borde p-3">
+        <input
+          type="checkbox"
+          className="mt-0.5 size-4 accent-[var(--marca)]"
+          {...register("esPersonal")}
+        />
+        <span>
+          <span className="block text-sm font-medium text-texto">
+            {esIngreso ? "Ingreso personal" : "Gasto personal"}
+          </span>
+          <span className="block text-xs text-texto-suave">
+            Entra en tu cuenta individual pero no en los totales del hogar ni en los
+            presupuestos. Los demás lo siguen viendo en la lista.
+          </span>
+        </span>
+      </label>
 
       <div>
         <button

@@ -68,6 +68,8 @@ export async function ejecutarRecurrentes(opciones?: {
         // El autor es un administrador porque la columna no admite nulos, pero
         // la cuenta individual se guía por el responsable de la regla.
         paidByUserId: regla.paidByUserId,
+        // El movimiento generado hereda el carácter de la regla.
+        esPersonal: regla.esPersonal,
         type: regla.type,
         amount: regla.amount,
         date: fecha,

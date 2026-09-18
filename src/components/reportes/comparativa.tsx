@@ -25,6 +25,10 @@ export function Comparativa({
   const moneda = useMoneda();
   const indiceDe = (userId: string) => miembros.findIndex((m) => m.id === userId);
 
+  // La columna solo aparece si quien mira tiene movimientos personales este
+  // mes. Una columna siempre vacía sería ruido.
+  const hayPersonales = filas.some((f) => f.personalIngresos > 0 || f.personalEgresos > 0);
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[34rem] border-collapse text-sm">
@@ -39,6 +43,11 @@ export function Comparativa({
             <th className="px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
               Gastos
             </th>
+            {hayPersonales && (
+              <th className="px-3 py-2 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
+                Personal
+              </th>
+            )}
             <th className="py-2 pl-3 text-right text-[11px] font-semibold uppercase tracking-wide text-texto-suave">
               Balance
             </th>
@@ -77,6 +86,27 @@ export function Comparativa({
                 clase="text-egreso"
               />
 
+              {hayPersonales && (
+                <td className="px-3 py-3 text-right align-middle">
+                  {f.personalIngresos > 0 || f.personalEgresos > 0 ? (
+                    <span className="flex flex-col items-end gap-0.5">
+                      {f.personalIngresos > 0 && (
+                        <span className="cifra text-xs font-medium text-ingreso">
+                          +{moneda.format(f.personalIngresos)}
+                        </span>
+                      )}
+                      {f.personalEgresos > 0 && (
+                        <span className="cifra text-xs font-medium text-egreso">
+                          -{moneda.format(f.personalEgresos)}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-texto-suave">—</span>
+                  )}
+                </td>
+              )}
+
               <td className="py-3 pl-3 text-right">
                 <span
                   className={cn(
@@ -100,6 +130,7 @@ export function Comparativa({
             <td className="cifra px-3 py-3 text-right font-semibold text-egreso">
               {moneda.format(totales.egresos)}
             </td>
+            {hayPersonales && <td className="px-3 py-3" />}
             <td
               className={cn(
                 "cifra py-3 pl-3 text-right font-semibold",
@@ -111,6 +142,14 @@ export function Comparativa({
           </tr>
         </tfoot>
       </table>
+
+      {hayPersonales && (
+        <p className="mt-3 text-xs text-texto-suave">
+          Las columnas de ingresos, gastos y balance son solo del hogar, para que los
+          porcentajes se puedan comparar entre personas. Lo personal va aparte, y solo se
+          muestra lo tuyo.
+        </p>
+      )}
     </div>
   );
 }

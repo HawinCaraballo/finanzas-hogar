@@ -70,6 +70,22 @@ export default async function PaginaDashboard({
             {soloUnaPersona ? `${ctx.hogar.nombre} · ` : "Resumen de "}
             <span className="capitalize">{nombrePeriodo(periodo)}</span>
           </p>
+          {/*
+            Sin este aviso, quien mira el hogar no tiene forma de saber que hay
+            movimientos fuera de estas cifras, y las cuentas "no le cuadran".
+          */}
+          {resumen.personalesExcluidos > 0 && (
+            <p className="mt-1 text-xs text-texto-suave">
+              No se incluyen {resumen.personalesExcluidos}{" "}
+              {resumen.personalesExcluidos === 1
+                ? "movimiento personal"
+                : "movimientos personales"}
+              .{" "}
+              <Link href="/movimientos?ambito=PERSONAL" className="text-marca hover:underline">
+                Verlos
+              </Link>
+            </p>
+          )}
         </div>
         <div className="flex flex-col gap-2 sm:items-end">
           <SelectorMes clave={claveDePeriodo(periodo)} className="justify-between sm:justify-end" />

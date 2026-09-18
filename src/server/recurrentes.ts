@@ -46,6 +46,7 @@ export async function listarRecurrentes(): Promise<RecurrenteVista[]> {
     proximaFecha: aFechaISO(r.nextRunDate),
     autoPost: r.autoPost,
     activa: r.activa,
+    esPersonal: r.esPersonal,
     categoria: r.categoria,
     responsable: r.responsable,
   }));
@@ -81,6 +82,7 @@ export async function guardarRecurrente(entrada: unknown): Promise<Resultado> {
       startDate,
       endDate,
       autoPost: datos.autoPost,
+      esPersonal: datos.esPersonal ?? false,
     };
 
     if (datos.id) {
@@ -177,6 +179,7 @@ export async function registrarAhora(id: string): Promise<Resultado> {
           // Lo registra quien pulsa el botón, pero la plata la pone quien diga
           // la regla.
           paidByUserId: regla.paidByUserId,
+          esPersonal: regla.esPersonal,
           type: regla.type,
           amount: regla.amount,
           date: fecha,

@@ -41,7 +41,22 @@ export function esPersona(
   return alcance.tipo === "persona";
 }
 
-/** Fragmento de `where` de Prisma que aplica el alcance a una consulta. */
-export function filtroPagador(alcance: Alcance): { paidByUserId?: string } {
-  return esPersona(alcance) ? { paidByUserId: alcance.userId } : {};
+/**
+ * Fragmento de `where` de Prisma que aplica el alcance a una consulta.
+ *
+ * Aquí vive la regla que define los movimientos personales: la cuenta del
+ * hogar es lo compartido y nada más, mientras que la cuenta de una persona es
+ * todo lo suyo, personal incluido. Por eso los dos casos filtran por cosas
+ * distintas y no por el mismo campo.
+ */
+export function filtroAlcance(alcance: Alcance): {
+  paidByUserId?: string;
+  esPersonal?: boolean;
+} {
+  return esPersona(alcance)
+    ? { paidByUserId: alcance.userId }
+    : { esPersonal: false };
 }
+
+/** Solo lo compartido: lo que cuenta para presupuestos y reportes del hogar. */
+export const SOLO_DEL_HOGAR = { esPersonal: false } as const;

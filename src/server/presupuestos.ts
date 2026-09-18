@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { SOLO_DEL_HOGAR } from "@/lib/alcance";
 import { requireHogar } from "@/lib/auth/guard";
 import { aNumero, prisma } from "@/lib/db";
 import { mesAnterior, rangoDelMes, type Periodo } from "@/lib/periodo";
@@ -34,6 +35,8 @@ export async function presupuestosEditables(periodo: Periodo): Promise<Presupues
       by: ["categoryId"],
       where: {
         householdId: ctx.hogar.id,
+        // Un tope es del hogar: un gasto personal no lo consume.
+        ...SOLO_DEL_HOGAR,
         type: "EGRESO",
         date: { gte: desde, lt: hasta },
       },

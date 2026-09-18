@@ -121,6 +121,35 @@ async function main() {
   }
   await prisma.transaction.createMany({ data: movimientos });
 
+  // Un par de movimientos personales, para que la funcionalidad se vea desde el
+  // primer arranque: son de Ana y no cuentan en los totales del hogar.
+  await prisma.transaction.createMany({
+    data: [
+      {
+        householdId: hogar.id,
+        categoryId: buscar("Ropa").id,
+        createdByUserId: usuarios[0].id,
+        paidByUserId: usuarios[0].id,
+        type: "EGRESO" as MovementType,
+        amount: 180_000,
+        date: fechaUTC(hoy.getUTCFullYear(), hoy.getUTCMonth() + 1, 7),
+        descripcion: "Ropa para mí",
+        esPersonal: true,
+      },
+      {
+        householdId: hogar.id,
+        categoryId: buscar("Entretenimiento").id,
+        createdByUserId: usuarios[1].id,
+        paidByUserId: usuarios[1].id,
+        type: "EGRESO" as MovementType,
+        amount: 95_000,
+        date: fechaUTC(hoy.getUTCFullYear(), hoy.getUTCMonth() + 1, 11),
+        descripcion: "Videojuego",
+        esPersonal: true,
+      },
+    ],
+  });
+
   const catMercado = buscar("Mercado");
   const catServicios = buscar("Energía");
   await prisma.budget.createMany({

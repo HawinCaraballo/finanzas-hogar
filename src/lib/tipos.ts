@@ -26,6 +26,8 @@ export type MovimientoVista = {
   responsable: { id: string; nombre: string };
   loanId: string | null;
   esRecurrente: boolean;
+  /** Suma en la cuenta de su responsable, pero no en la del hogar. */
+  esPersonal: boolean;
 };
 
 export type CreditoVista = {
@@ -49,6 +51,8 @@ export type FiltrosMovimientos = {
   categoryId?: string;
   /** Filtra por quién pagó o recibió, no por quién registró. */
   paidByUserId?: string;
+  /** "hogar" = solo lo compartido; "personal" = solo lo personal. */
+  ambito?: "TODOS" | "HOGAR" | "PERSONAL";
   texto?: string;
   pagina?: number;
 };
@@ -79,6 +83,13 @@ export type ResumenMes = {
   ingresos: number;
   egresos: number;
   balance: number;
+  /**
+   * Cuántos movimientos personales quedaron fuera. Solo se cuenta al mirar el
+   * hogar completo, para avisar de que las cifras no los incluyen. Es un
+   * conteo y no un monto porque sumar ingresos y gastos personales en una
+   * sola cifra no significaría nada.
+   */
+  personalesExcluidos: number;
   ingresosPrevios: number;
   egresosPrevios: number;
   balancePrevio: number;
@@ -130,6 +141,8 @@ export type RecurrenteVista = {
   proximaFecha: string;
   autoPost: boolean;
   activa: boolean;
+  /** Los movimientos que genere no contarán en el hogar. */
+  esPersonal: boolean;
   categoria: { id: string; nombre: string; icon: string; color: string };
   responsable: { id: string; nombre: string };
 };
@@ -151,6 +164,12 @@ export type FilaComparativa = {
   participacionIngresos: number;
   /** Qué parte de los gastos del hogar pagó, en 0..100. */
   participacionEgresos: number;
+  /**
+   * Lo personal de quien mira el reporte. Queda fuera de las columnas del
+   * hogar para que los porcentajes sigan sumando 100 entre los miembros.
+   */
+  personalIngresos: number;
+  personalEgresos: number;
 };
 
 /** Un mes de la serie apilada, con el total de cada miembro en ese mes. */

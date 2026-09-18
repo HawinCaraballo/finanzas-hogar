@@ -143,6 +143,10 @@ model Transaction {
   date            DateTime     @db.Date
   descripcion     String
   notas           String?
+  // Un movimiento personal es del miembro, no de la casa: suma en su cuenta
+  // individual pero queda fuera de los totales del hogar, de los presupuestos
+  // y de la comparativa de reportes. Sigue siendo visible para todos.
+  esPersonal      Boolean      @default(false)
   loanId          String?
   recurringRuleId String?
   // Identifica el periodo generado por una regla recurrente (ej. "2026-09").
@@ -162,6 +166,7 @@ model Transaction {
   @@index([householdId, date])
   @@index([householdId, categoryId])
   @@index([householdId, paidByUserId, date])
+  @@index([householdId, esPersonal, date])
   @@index([loanId])
 }
 
@@ -198,6 +203,9 @@ model RecurringRule {
   endDate      DateTime?    @db.Date
   nextRunDate  DateTime     @db.Date
   autoPost     Boolean      @default(true)
+  // Una regla personal genera movimientos personales: cuentan en la cuenta de
+  // su responsable, no en la del hogar.
+  esPersonal   Boolean      @default(false)
   activa       Boolean      @default(true)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt

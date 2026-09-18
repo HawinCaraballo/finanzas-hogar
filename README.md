@@ -113,10 +113,25 @@ De quién son las cifras que se están mirando es el **alcance**
 `parseAlcance` lo valida **contra los miembros del hogar activo**, así un id ajeno cae en
 «hogar» en vez de filtrar por alguien de otra casa.
 
-No existen los gastos personales: todo movimiento cuenta a la vez en su cuenta individual
-y en la del hogar. De ahí la invariante que prueba
-[tests/e2e/cuentas-individuales.spec.ts](tests/e2e/cuentas-individuales.spec.ts): **el
-total del hogar es la suma exacta de las cuentas individuales.**
+Un movimiento puede marcarse como **personal**: entonces suma en la cuenta individual de
+su responsable pero queda fuera de los totales del hogar, de los presupuestos y de la
+comparativa de reportes. Sigue siendo visible para todos en la lista, marcado con una
+insignia; no es un movimiento privado, es un movimiento que no es de la casa.
+
+Esa es toda la regla, y vive en `filtroAlcance`
+([src/lib/alcance.ts](src/lib/alcance.ts)): el alcance «hogar» filtra por
+`esPersonal: false`, y el de una persona por `paidByUserId`, sin excluir nada suyo.
+
+Una **regla recurrente** también puede ser personal, y entonces todo lo que genere
+—tanto por el cron como por el botón de registrar— nace personal. Las reglas personales
+no aparecen en la tarjeta de próximos pagos del dashboard, que es del hogar: serían un
+pago de la casa que la casa no va a pagar.
+
+De ahí la invariante que prueba
+[tests/e2e/cuentas-individuales.spec.ts](tests/e2e/cuentas-individuales.spec.ts): **entre
+los movimientos del hogar, el total es la suma exacta de las cuentas individuales.** Lo
+personal queda fuera de esa suma a propósito, y el dashboard avisa de cuántos movimientos
+está dejando fuera.
 
 Dos bloques del dashboard no siguen el alcance a propósito: los **presupuestos**, porque
 un tope es del hogar y «mi parte del tope» no significa nada, y los **próximos pagos**,

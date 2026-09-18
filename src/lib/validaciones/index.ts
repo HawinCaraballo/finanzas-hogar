@@ -80,6 +80,9 @@ export const movimientoSchema = z.object({
   loanId: z.string().optional().or(z.literal("")),
   // Quién puso la plata. Si no viene, la acción usa al usuario de la sesión.
   paidByUserId: z.string().optional().or(z.literal("")),
+  // Marca el movimiento como personal: cuenta en la cuenta individual de su
+  // responsable, pero no en los totales del hogar ni en los presupuestos.
+  esPersonal: z.boolean().optional(),
 });
 
 // --- Presupuestos ---
@@ -106,6 +109,7 @@ export const recurrenteSchema = z.object({
   endDate: fechaISOSchema.optional().or(z.literal("")),
   autoPost: z.boolean(),
   paidByUserId: z.string().optional().or(z.literal("")),
+  esPersonal: z.boolean().optional(),
 });
 
 // --- Créditos ---
